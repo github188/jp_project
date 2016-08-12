@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common
+END
+queryresult.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 185
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/queryresult.cpp
+END
+database.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 182
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/database.cpp
+END
+sqldelaythread.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/sqldelaythread.cpp
+END
+queryresult.h
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/queryresult.h
+END
+database.h
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/database.h
+END
+sqldelaythread.h
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/sqldelaythread.h
+END
+sqloperation.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/sqloperation.cpp
+END
+field.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/field.cpp
+END
+sqloperation.h
+K 25
+svn:wc:ra_dav:version-url
+V 184
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/sqloperation.h
+END
+sqlstring.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/sqlstring.cpp
+END
+querycallback.h
+K 25
+svn:wc:ra_dav:version-url
+V 185
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/querycallback.h
+END
+field.h
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/field.h
+END
+sqlstring.h
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/sqlstring.h
+END
+databaseimpl.h
+K 25
+svn:wc:ra_dav:version-url
+V 184
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/databaseimpl.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/database/common/Makefile
+END

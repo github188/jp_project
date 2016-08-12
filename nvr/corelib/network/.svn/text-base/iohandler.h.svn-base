@@ -1,0 +1,76 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __CORELIB_NETWORK_IOHANDLER_H__
+#define __CORELIB_NETWORK_IOHANDLER_H__
+
+#include <string>
+
+#include "../../common/basetype.h"
+
+namespace corelib {
+namespace MTP_NETWORK {
+
+
+enum SHUT_REASON{
+	SHUT_RD,
+	SHUT_WR,
+	SHUT_ER,
+};
+
+class Connection;
+class IOHandler
+{
+	private:
+
+		IOHandler(const IOHandler&);
+
+		IOHandler& operator= (const IOHandler&);
+
+	public:
+
+		IOHandler();
+
+		virtual ~IOHandler();
+
+	public:
+
+		// when connection is accepted or connected
+		virtual void OnConnectionOpened(Connection *connection) = 0;
+
+		// when some data is readable, user read data from connection's in buffer.
+		virtual void OnConnectionReceive(Connection *connection) = 0;
+
+		// when some data is readable with raw bytes
+		virtual void OnConnectionReceiveRawData(Connection *connection, char *data, size_t len) = 0;
+
+		// when connection is disconnected if input close/output close/error happens: 0-input close, 1-output close, 2-error
+		virtual void OnConnectionDisConnect(Connection *connection, SHUT_REASON reason) = 0;
+
+		// when timeout is happened
+		virtual void OnConnectionTimedOut(Connection *connection) = 0;
+
+		// when connection closed
+		virtual void OnConnectionClosed(Connection *connection) = 0;
+};
+
+}
+}
+
+#endif /* end of file */

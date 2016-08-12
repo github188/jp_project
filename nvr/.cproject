@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="org.eclipse.linuxtools.cdt.autotools.core.toolChain.1193706988">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="org.eclipse.linuxtools.cdt.autotools.core.toolChain.1193706988" moduleId="org.eclipse.cdt.core.settings" name="Build (GNU)">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.MachO64" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.Cygwin_PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GNU_ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration buildProperties="" description="" id="org.eclipse.linuxtools.cdt.autotools.core.toolChain.1193706988" name="Build (GNU)" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="org.eclipse.linuxtools.cdt.autotools.core.toolChain.1193706988.1823129406" name="/" resourcePath="">
+						<toolChain id="org.eclipse.linuxtools.cdt.autotools.core.toolChain.661918872" name="GNU Autotools Toolchain" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolChain">
+							<targetPlatform id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.targetPlatform.1748162255" isAbstract="false" name="GNU Autotools Target Platform" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.targetPlatform"/>
+							<builder id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder.1861173246" keepEnvironmentInBuildfile="false" managedBuildOn="false" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.builder"/>
+							<tool id="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure.1880655350" name="configure" superClass="org.eclipse.linuxtools.cdt.autotools.core.gnu.toolchain.tool.configure">
+								<option id="org.eclipse.linuxtools.cdt.autotools.core.option.configure.name.1528540322" superClass="org.eclipse.linuxtools.cdt.autotools.core.option.configure.name" value="org.eclipse.linuxtools.cdt.autotools.core.toolChain.1193706988" valueType="string"/>
+							</tool>
+							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen.212911196" name="autogen.sh" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.autogen"/>
+							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1804591475" name="GCC C Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc">
+								<option id="gnu.c.compiler.option.include.paths.2118942078" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;D:\usr\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\include\c++\4.4.4&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\include\c++\4.4.4\x86_64-redhat-linux&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\include\c++\4.4.4\backward&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\local\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\lib\gcc\include&quot;"/>
+									<listOptionValue builtIn="false" value="D:/usr/include"/>
+									<listOptionValue builtIn="false" value="D:/usr/include/c++/4.4.4"/>
+									<listOptionValue builtIn="false" value="D:/usr/include/c++/4.4.4/x86_64-redhat-linux"/>
+									<listOptionValue builtIn="false" value="D:/usr/include/c++/4.4.4/backward"/>
+									<listOptionValue builtIn="false" value="D:/usr/local/include"/>
+									<listOptionValue builtIn="false" value="D:/usr/lib/gcc/include"/>
+									<listOptionValue builtIn="false" value="/usr"/>
+									<listOptionValue builtIn="false" value="/usr/include"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1679504153" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.1353571258" name="GCC C++ Compiler" superClass="org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp">
+								<option id="gnu.cpp.compiler.option.include.paths.895620353" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;D:\usr\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\include\c++\4.4.4&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\include\c++\4.4.4\x86_64-redhat-linux&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\include\c++\4.4.4\backward&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\local\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\usr\lib\gcc\include&quot;"/>
+									<listOptionValue builtIn="false" value="D:/usr/include"/>
+									<listOptionValue builtIn="false" value="D:/usr/include/c++/4.4.4"/>
+									<listOptionValue builtIn="false" value="D:/usr/include/c++/4.4.4/x86_64-redhat-linux"/>
+									<listOptionValue builtIn="false" value="D:/usr/include/c++/4.4.4/backward"/>
+									<listOptionValue builtIn="false" value="D:/usr/local/include"/>
+									<listOptionValue builtIn="false" value="D:/usr/lib/gcc/include"/>
+									<listOptionValue builtIn="false" value="/usr"/>
+									<listOptionValue builtIn="false" value="/usr/include"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.630870005" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="nvr.null.436269882" name="nvr"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.toolChain.1193706988;org.eclipse.linuxtools.cdt.autotools.core.toolChain.1193706988.1823129406;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gpp.1353571258;cdt.managedbuild.tool.gnu.cpp.compiler.input.630870005">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="org.eclipse.linuxtools.cdt.autotools.core.toolChain.1193706988;org.eclipse.linuxtools.cdt.autotools.core.toolChain.1193706988.1823129406;org.eclipse.linuxtools.cdt.autotools.core.toolchain.tool.gcc.1804591475;cdt.managedbuild.tool.gnu.c.compiler.input.1679504153">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+</cproject>

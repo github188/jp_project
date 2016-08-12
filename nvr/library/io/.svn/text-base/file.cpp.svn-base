@@ -1,0 +1,274 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <errno.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#include "file.h"
+#include "../util/log.h"
+
+using namespace library;
+
+File::File() : IFile(), m_fil(NULL), m_b_close(true), m_rptr(0), m_wptr(0)
+{
+}
+
+File::File(FILE *fil) : IFile(), m_fil(fil), m_b_close(false), m_rptr(0), m_wptr(0)
+{
+}
+
+File::File(const std::string &path, const std::string &mode) : IFile(), m_fil(NULL), 
+				m_b_close(true), m_rptr(0), m_wptr(0)
+{
+	fopen(path, mode);
+}
+
+File::~File()
+{
+	if (m_b_close)
+	{
+		fclose();
+	}
+}
+
+bool File::fopen(const std::string& path, const std::string& mode)
+{
+	m_path = path;
+	m_mode = mode;
+#if defined( _WIN32) && !defined(__CYGWIN__)
+	if (fopen_s(&m_fil, path.c_str(), mode.c_str()))
+		m_fil = NULL;
+#else
+	std::string pathInfo;
+	getPathString(path.c_str(), pathInfo);
+	if (pathInfo.size() > 0) createDirent(pathInfo.c_str());
+	
+	m_fil = ::fopen(path.c_str(), mode.c_str());
+#endif
+
+	return m_fil ? true : false;
+}
+
+void File::fclose() const
+{
+	if (m_fil)
+	{
+		::fclose(m_fil);
+		m_fil = NULL;
+	}
+}
+
+size_t File::fread(char *ptr, size_t size, size_t nmemb) const
+{
+	size_t r = 0;
+	if (m_fil)
+	{
+		fseek(m_fil, m_rptr, SEEK_SET);
+		r = ::fread(ptr, size, nmemb, m_fil);
+		m_rptr = ftell(m_fil);
+	}
+	return r;
+}
+
+size_t File::fwrite(const char *ptr, size_t size, size_t nmemb)
+{
+	size_t r = 0;
+	if (m_fil)
+	{
+		fseek(m_fil, m_wptr, SEEK_SET);
+		r = ::fwrite(ptr, size, nmemb, m_fil);
+		m_wptr = ftell(m_fil);
+	}
+	return r;
+}
+
+char *File::fgets(char *s, int size) const
+{
+	char *r = NULL;
+	if (m_fil)
+	{
+		fseek(m_fil, m_rptr, SEEK_SET);
+		r = ::fgets(s, size, m_fil);
+		m_rptr = ftell(m_fil);
+	}
+	return r;
+}
+
+void File::fprintf(const char *format, ...)
+{
+	if (!m_fil)
+		return;
+	va_list ap;
+	va_start(ap, format);
+	fseek(m_fil, m_wptr, SEEK_SET);
+	vfprintf(m_fil, format, ap);
+	m_wptr = ftell(m_fil);
+	va_end(ap);
+}
+
+off_t File::size() const
+{
+	struct stat st;
+	if (stat(m_path.c_str(), &st) == -1)
+	{
+		return 0;
+	}
+	return st.st_size;
+}
+
+bool File::eof() const
+{
+	if (m_fil)
+	{
+		if (feof(m_fil))
+			return true;
+	}
+	return false;
+}
+
+void File::reset_read() const
+{
+	m_rptr = 0;
+}
+
+void File::reset_write()
+{
+	m_wptr = 0;
+}
+
+const std::string& File::path() const
+{
+	return m_path;
+}
+
+int32 File::getPathString(const char *filename, std::string &pathInfo)
+{
+	const char *pcStrb = NULL, *pcStra = NULL;
+	const char *pcPtr = NULL;
+	size_t len = 0;
+	
+	if (filename == NULL) return STATUS_ERROR;
+	pcPtr = filename;
+
+	len = ::strlen(filename);
+	pcStra = ::strchr(filename, '/');
+	pcStrb = ::strrchr(filename, '/');
+
+	/* file name like 'b' is ok. */
+	if (pcStra == NULL && pcStrb == NULL)
+	{
+		pathInfo = "";
+		Log(LOG_DEBUG, "use relate path with program.");
+		return STATUS_SUCCESS;
+	}
+
+	/* file name like 'b/' is error */
+	if (pcStra == pcStrb && *(pcStra + 1) == '\0')
+	{
+		Log(LOG_ERROR, "no file name info.");
+		return STATUS_ERROR;
+	}
+
+	/* file name like 'b/a' is ok */
+	if (pcStra == pcStrb)
+	{
+		char tempchar[32] = {0};
+		
+		::memcpy(tempchar, pcPtr, (pcStra - pcPtr));
+		pathInfo += tempchar;
+		pathInfo += '/';
+
+		return STATUS_SUCCESS;
+	}
+
+	/* file name like 'a/b/c(.txt)' or '/a/b/c(.txt)' is all ok */
+	if (pcStrb > pcStra)
+	{
+		char *pcBuf = (char*) malloc(pcStrb - pcPtr + 1);
+		if (pcBuf == NULL) return STATUS_ERROR;
+		::memset(pcBuf, 0, pcStrb - pcPtr + 1);
+		::memcpy(pcBuf, pcPtr, pcStrb - pcPtr);
+		pathInfo = pcBuf;
+		pathInfo += '/';
+		free(pcBuf);
+
+		return STATUS_SUCCESS;
+	}
+	else
+	{
+		Log(LOG_ERROR, "some thing is error to the input parameter.");
+		return STATUS_ERROR;
+	}
+
+	return STATUS_SUCCESS;
+}
+
+int32 File::createDirent(const char *pcPath)
+{
+	const char *pcStrb = NULL, *pcStra = NULL;
+	char *pcBuf = NULL;
+	int32 iRet;
+	size_t nbt;
+
+	if (pcPath == NULL) return STATUS_ERROR;
+	if (::strlen(pcPath) <= 1L) return STATUS_ERROR;
+	
+	pcStrb = pcPath;
+	pcStra = ::strchr(pcPath, '/');
+	while (pcStra != NULL)
+	{
+		if (pcStra == pcStrb) pcStra = ::strchr(pcStra + 1, '/');
+		if (pcStra == NULL)
+			nbt = ::strlen(pcStrb);
+		else
+			nbt = pcStra - pcPath;
+		
+		if (nbt <= 1L) continue;
+		pcBuf = (char*) malloc(nbt + 1);
+		if (pcBuf == NULL) return STATUS_ERROR;
+		
+		::memset(pcBuf, 0, (nbt + 1));
+		::memcpy(pcBuf, pcPath, nbt);
+		if (!isExsit(pcBuf))
+		{
+			iRet = ::mkdir(pcBuf, FILE_MODE);
+			if (iRet == STATUS_ERROR)
+			{
+				Log(LOG_ERROR, "createDir, create dir: %s-%s.", pcBuf, strerror(errno));
+				free(pcBuf);
+				return iRet;
+			}
+		}
+		free(pcBuf);
+
+		pcStrb = pcStra;
+	}
+	
+	return STATUS_SUCCESS;
+}
+
+bool File::isExsit(const char * pcName)
+{
+	if (pcName == NULL) return false;
+
+	return ((::access(pcName, 0) == -1) ? false :true);
+}

@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol
+END
+datastructure.h
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/datastructure.h
+END
+formatfactory.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/formatfactory.cpp
+END
+formatproperty.h
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/formatproperty.h
+END
+datastructuremarshaller.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/datastructuremarshaller.cpp
+END
+formatfactory.h
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/formatfactory.h
+END
+format.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/format.cpp
+END
+datastructure.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/datastructure.cpp
+END
+datastructuremarshaller.h
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/datastructuremarshaller.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/Makefile
+END
+format.h
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/format.h
+END
+formatproperty.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/protocol/formatproperty.cpp
+END

@@ -1,0 +1,170 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __LIBRARY_UTIL_LOCKQUEUE_H__
+#define __LIBRARY_UTIL_LOCKQUEUE_H__
+
+#include <deque>
+
+#include "queue.h"
+#include "../concurrent/lock.h"
+#include "../concurrent/reentrant.h"
+
+namespace library {
+
+template <typename T, typename Container = std::deque<T> >
+class LockedQueue : public Queue<T>
+{
+	private:
+
+		LockedQueue(const LockedQueue&);
+		LockedQueue& operator= (const LockedQueue&);
+
+	public:
+
+		LockedQueue() {};
+
+		virtual ~LockedQueue() {};
+
+	public:
+
+		/**
+		 * @see Queue::add(const T& item)
+		 */
+		virtual void add(const T& item) {
+
+			Synchronization g(_lock);
+
+			_queue.push_back(item);
+
+		};
+
+		/**
+		 * @see Queue::add(const T& item, unsigned long timeout)
+		 */
+		virtual bool add(const T& item, unsigned long timeout) {
+
+			struct timeval stTimeout;
+
+			stTimeout.tv_sec = timeout/1000;
+			stTimeout.tv_usec = timeout * 1000 - timeout/1000000;
+			
+			bool bLocked = _lock.trylock(stTimeout);
+			if (bLocked) {
+				
+				_queue.push_back(item);
+				
+				_lock.unlock();
+			}
+
+			return bLocked;
+
+		}
+
+		/**
+         * @see Queue::next()
+         */
+		virtual T next() {
+
+			Synchronization g(_lock);
+
+			if (_queue.empty()) return T();
+
+			T item = _queue.front();
+        	_queue.pop_front();
+
+			return item;
+			
+		}
+
+		/**
+         * @see Queue::next(unsigned long timeout)
+         */
+		virtual T next(unsigned long timeout) {
+
+			struct timeval stTimeout;
+
+			stTimeout.tv_sec = timeout/1000;
+			stTimeout.tv_usec = timeout * 1000 - timeout/1000000;
+
+			bool bLocked = _lock.trylock(stTimeout);
+			if (bLocked) {
+				
+				if (_queue.empty()) return T();
+
+				T item = _queue.front();
+        		_queue.pop_front();
+
+				_lock.unlock();
+
+				return item;
+			}
+
+			return T();
+		}
+
+		virtual T front() {
+
+			Synchronization g(_lock);
+
+			return _queue.front();
+		}
+
+		/**
+         * @see Queue::size()
+         */
+		virtual size_t size() {
+
+			Synchronization g(_lock);
+
+			return _queue.size();
+		}
+
+		/**
+         * @see Queue::size(unsigned long timeout)
+         */
+		virtual size_t size(unsigned long timeout) {
+
+			struct timeval stTimeout;
+			size_t size = 0;
+
+			stTimeout.tv_sec = timeout/1000;
+			stTimeout.tv_usec = timeout * 1000 - timeout/1000000;
+			bool bLocked = _lock.trylock(stTimeout);
+			if (bLocked) {
+
+				size = _queue.size();
+				_lock.unlock();
+			}
+
+			return size;
+		}
+
+	private:
+
+		//! Serialize access to the Queue
+		Lock _lock;
+
+		//! Storage backing the queue
+		Container _queue;
+};
+
+}
+
+#endif /* end of file */

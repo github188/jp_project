@@ -1,0 +1,92 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <string.h>
+#include "database.h"
+
+using namespace library;
+using namespace corelib;
+using namespace corelib::database;
+
+Database::Database() : m_delayThread(NULL), m_delayThreadBody(NULL)
+{
+}
+
+Database::~Database()
+{
+}
+
+bool Database::dbInitialize()
+{
+	return true;
+}
+
+bool Database::dbShutdown()
+{
+	return true;
+}
+
+bool Database::beginTransaction()
+{
+	return true;
+}
+
+bool Database::commitTransaction()
+{
+	return true;
+}
+
+bool Database::rollbackTransaction()
+{
+	return true;
+}
+
+unsigned long Database::escapeString(char *to, const char *from, unsigned long length)
+{
+	if (to == NULL || from == NULL || length == 0) return -1;
+	
+	strncpy(to,from,length);
+	
+	return length;
+}
+
+void Database::escapeString(std::string &str)
+{
+	if (str.empty()) return ;
+
+	char *buf = new char[str.size() * 2 + 1];
+	escapeString(buf, str.c_str(), str.size());
+
+	str = buf;
+	delete []buf;
+}
+
+void Database::setResultQueue(SqlResultQueue * queue)
+{
+	THREADID id = (THREADID)pthread_self();
+	m_queryQueues[id] = queue;
+}
+
+void Database::threadStart()
+{
+}
+
+void Database::threadEnd()
+{
+}

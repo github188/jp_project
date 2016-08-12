@@ -1,0 +1,63 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __CORELIB_DATABASE_COMMON_SQLDELAYTHREAD_H__
+#define __CORELIB_DATABASE_COMMON_SQLDELAYTHREAD_H__
+
+#include "../../../library/util/lockqueue.h"
+#include "../../../library/common/runnable.h"
+
+namespace corelib {
+namespace database {
+
+class SqlOperation;
+class Database;
+class SqlDelayThtread : public library::Runnable
+{
+	typedef library::LockedQueue<SqlOperation *> SqlQueue;
+	public:
+
+		SqlDelayThtread(Database *db);
+
+		~SqlDelayThtread();
+
+	public:
+
+		virtual void run();
+
+		void stop();
+
+		virtual bool bNeedDestroyed() const {
+			return false;
+		}
+
+		///< Put sql statement to delay queue
+        inline void Delay(SqlOperation* sql) { m_sqlQueue.add(sql); }
+
+	private:
+
+		bool m_running;
+		SqlQueue m_sqlQueue;
+		Database *m_dbEngine;
+};
+
+}
+}
+
+#endif /* end of file */

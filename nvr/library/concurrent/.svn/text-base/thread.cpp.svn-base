@@ -1,0 +1,226 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by Y.S.G   										   *
+ *   ysgen0217@163.com   												   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <sstream>
+#include <errno.h>
+
+#include "../common/exceptiondefines.h"
+#include "../common/threadhandle.h"
+#include "../internal/threading.h"
+#include "../common/exception.h"
+#include "thread.h"
+
+using namespace library;
+using namespace platform;
+
+namespace library {
+
+////////////////////////////////////////////////////////////////////////////////
+static void nsleep(int secs, long nanos)
+{
+	long s = secs + nanos / 1000000000;
+	long n = nanos % 1000000000;
+
+#ifdef _POSIX_TIMERS
+	struct timespec interval, remainder;
+	interval.tv_sec = (int)s;
+	interval.tv_nsec = n;
+	if (nanosleep(&interval, &remainder) == -1) {
+		if (errno == EINTR) {
+			printf("nanosleep: error\n");
+		}
+	}
+#else
+	struct timeval interval;
+	interval.tv_sec = s;
+	interval.tv_usec = n/1000;
+	fd_set writefds, readfds, exceptfds;
+	FD_ZERO(&writefds);
+	FD_ZERO(&readfds);
+	FD_ZERO(&exceptfds);
+	if (select(0, &writefds, &readfds, &exceptfds, &interval) == -1) {
+		if (errno == EINTR) {
+			printf("sleep interrupted\n");
+		}
+	}
+#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////
+class ThreadProperties
+{
+	private:
+
+        ThreadProperties(const ThreadProperties&);
+
+        ThreadProperties& operator= (const ThreadProperties&);
+
+	public:
+
+		ST_ThreadHandle *handle;
+
+		static uint32 id;
+
+		Runnable* task;
+
+	public:
+
+		ThreadProperties() : handle(NULL), task(NULL)
+		{
+		};
+};
+
+}
+
+////////////////////////////////////////////////////////////////////////////////
+uint32 ThreadProperties::id = 0;
+
+////////////////////////////////////////////////////////////////////////////////
+Thread::Thread() : Runnable(), properties(NULL)
+{
+	this->initializeself(NULL, "", -1);
+}
+
+Thread::Thread(Runnable *task) : Runnable(), properties(NULL)
+{
+	this->initializeself(task, "", -1);
+}
+
+Thread::Thread(const std::string& name) : Runnable(), properties(NULL)
+{
+	this->initializeself(NULL, name, -1);
+}
+
+Thread::Thread(Runnable* task, const std::string& name)
+{
+	this->initializeself(task, name, -1);
+}
+
+Thread::Thread(Runnable* task, const std::string& name, long long stackSize)
+{
+	this->initializeself(task, name, stackSize);
+}
+
+void Thread::initializeself(Runnable* task, const std::string& name, uint64 stacksize)
+{
+	std::string tname = name;
+
+	if (tname.empty())
+	{
+		std::ostringstream oss;
+
+		oss << "Thread-" << ++ThreadProperties::id;
+		tname = oss.str();
+	}
+	
+	properties = new ThreadProperties();
+	properties->handle = Threading::createnewthread(tname, Thread::NORM_PRIORITY, stacksize, this);
+	properties->task = task;
+}
+
+Thread::~Thread()
+{
+	Threading::destroythread(this->properties->handle);
+	
+	if (properties) delete properties;
+	
+	properties = NULL;
+}
+
+void Thread::start()
+{
+	try {
+
+		if (Threading::getthreadstate(this->properties->handle) > Thread::IDLE)
+			return;
+		
+		Threading::start(this->properties->handle);
+
+	}
+	EXCEPTION_CATCH_RETHROW(Exception)
+}
+
+void Thread::join()
+{
+	Threading::jointhread(this->properties->handle);
+}
+
+uint64 Thread::getid() const
+{
+	return Threading::getcurrentthreadid(this->properties->handle);
+}
+
+std::string Thread::getname() const
+{
+	return Threading::getthreadname(this->properties->handle);
+}
+
+void Thread::setname(const std::string& name)
+{
+	Threading::setthreadname(this->properties->handle, name);
+}
+
+int Thread::getpriority() const
+{
+	return Threading::getPriority(this->properties->handle);
+}
+
+void Thread::setpriority(int value)
+{
+	Threading::setPriority(this->properties->handle, value);
+}
+
+std::string Thread::tostring() const
+{
+	return Threading::getthreadname(this->properties->handle);
+}
+
+bool Thread::isalive() const
+{
+	return Threading::isalive(this->properties->handle);
+}
+
+Thread::State Thread::getstate() const
+{
+	return (Thread::State) Threading::getthreadstate(this->properties->handle);
+}
+
+void Thread::run()
+{
+	if (this->properties->task != NULL)
+	{
+		this->properties->task->run();
+	}
+}
+
+void Thread::sleep(long millis)
+{
+	nsleep((int)(millis/1000), (millis%1000)*1000000);
+}
+
+void Thread::sleep(long millis, int nanos)
+{
+	nsleep((int)(millis/1000), (millis%1000)*1000000 + nanos);
+}
+
+Thread* Thread::clone()
+{
+	return new Thread(properties->task);
+}
+

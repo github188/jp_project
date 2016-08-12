@@ -1,0 +1,167 @@
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol
+END
+deviceheartbeatmarshaller.h
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/deviceheartbeatmarshaller.h
+END
+cardescriptioninfomarshaller.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/cardescriptioninfomarshaller.cpp
+END
+zhuhaiformat.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/zhuhaiformat.cpp
+END
+devicetimesyncinfomarshaller.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/devicetimesyncinfomarshaller.cpp
+END
+carbypassdescinfo.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/carbypassdescinfo.cpp
+END
+cardescriptioninfomarshaller.h
+K 25
+svn:wc:ra_dav:version-url
+V 189
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/cardescriptioninfomarshaller.h
+END
+zhuhaiformat.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/zhuhaiformat.h
+END
+devicetimesyncinfomarshaller.h
+K 25
+svn:wc:ra_dav:version-url
+V 189
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/devicetimesyncinfomarshaller.h
+END
+carbypassdescinfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/carbypassdescinfo.h
+END
+consumerheartbeat.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/consumerheartbeat.cpp
+END
+consumerregisterinfo.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/consumerregisterinfo.cpp
+END
+carbypassdescinfomarshaller.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/carbypassdescinfomarshaller.cpp
+END
+deviceheartbeat.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/deviceheartbeat.cpp
+END
+consumerheartbeat.h
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/consumerheartbeat.h
+END
+consumerregisterinfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/consumerregisterinfo.h
+END
+carbypassdescinfomarshaller.h
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/carbypassdescinfomarshaller.h
+END
+deviceheartbeat.h
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/deviceheartbeat.h
+END
+cardescriptioninfo.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/cardescriptioninfo.cpp
+END
+consumerheartbeatmarshaller.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/consumerheartbeatmarshaller.cpp
+END
+consumerregisterinfomarshaller.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 193
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/consumerregisterinfomarshaller.cpp
+END
+devicetimesyncinfo.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/devicetimesyncinfo.cpp
+END
+cardescriptioninfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/cardescriptioninfo.h
+END
+deviceheartbeatmarshaller.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/deviceheartbeatmarshaller.cpp
+END
+consumerheartbeatmarshaller.h
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/consumerheartbeatmarshaller.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/Makefile
+END
+consumerregisterinfomarshaller.h
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/consumerregisterinfomarshaller.h
+END
+devicetimesyncinfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/app/protocol/devicetimesyncinfo.h
+END

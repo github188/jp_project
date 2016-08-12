@@ -1,0 +1,95 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <sstream>
+
+#include "../../library/concurrent/thread.h"
+#include "../../library/util/log.h"
+#include "connectionhandlerepoll.h"
+#include "connectionhandler.h"
+#include "ioacceptor.h"
+#include "tcpserver.h"
+
+using namespace library;
+using namespace corelib;
+using namespace corelib::MTP_NETWORK;
+
+IOAcceptor::IOAcceptor(ConnectionHandler *selector): go(false), _server(NULL), 
+thread(NULL), bOwnConnectionHandler_(false), selector_(selector)
+{
+	this->thread = new Thread(this, "IACPT");
+}
+
+IOAcceptor::IOAcceptor(IOHandler *handler, bool bDelete): go(false), _server(NULL), thread(NULL), 
+				bOwnConnectionHandler_(true), selector_(NULL)
+{
+	this->thread = new Thread(this, "IACPT");
+//	this->selector_ = new ConnectionHandler(handler, bDelete);
+	this->selector_ = new ConnectionHandlerEp(handler, bDelete);
+}
+
+IOAcceptor::~IOAcceptor()
+{
+	if (this->thread) delete this->thread;
+	this->thread = NULL;
+
+	if (this->_server) delete this->_server;
+	this->_server = NULL;
+	
+	if (selector_ && bOwnConnectionHandler_) delete selector_;
+	selector_ = NULL;
+}
+
+void IOAcceptor::run()
+{
+	while (go) {
+		selector_->select(0, 20000);
+	}
+}
+
+void IOAcceptor::start()
+{
+	this->go = true;
+	this->thread->start();
+}
+
+void IOAcceptor::stop()
+{
+	this->go = false;
+}
+
+void IOAcceptor::bind(uint16 port, int32 timeOutInMillsec)
+{	
+	_server = new TcpServer(selector_);
+	_server->bind(port, timeOutInMillsec);
+	selector_->add(_server);
+}
+
+void IOAcceptor::bind(uint16 port, const char *ipaddress, int32 timeOutInMillsec)
+{
+	_server = new TcpServer(selector_);
+	_server->bind(port, ipaddress, timeOutInMillsec);
+	selector_->add(_server);
+}
+
+void IOAcceptor::setConnectionHandler(ConnectionHandler *selector, bool own)
+{
+	this->selector_ = selector;
+	this->bOwnConnectionHandler_ = own;
+}

@@ -1,0 +1,126 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __LIBRARY_NET_SOCKET_H__
+#define __LIBRARY_NET_SOCKET_H__
+
+#include "../../common/basetype.h"
+#include <string>
+
+namespace library {
+
+/**
+ * client or connection
+ */
+class SocketImpl;
+class InputStream;
+class OutputStream;
+class Socket
+{
+	private:
+
+		Socket(const Socket &);
+
+		Socket& operator= (const Socket &);
+		
+	public:
+
+		Socket();
+
+		Socket(SocketImpl *socketImpl);
+
+		Socket(const std::string &remoteIpaddress, int16 remotePort);
+
+		Socket(const std::string &remoteIpaddress, int16 remotePort, const std::string &localIpaddress, int16 localPort);
+
+		virtual ~Socket();
+
+	public:
+
+		virtual int32 bind(const std::string &localIpaddress, uint16 localPort);
+
+		virtual int32 connect(const std::string &remoteIpaddress, uint16 remotePort);
+
+		virtual int32 connect(const std::string &remoteIpaddress, uint16 remotePort, int32 timeout);
+
+		virtual int32 reConnect(const std::string &remoteIpaddress, uint16 remotePort);
+
+		virtual int32 reConnect(const std::string &remoteIpaddress, uint16 remotePort, int32 timeout);
+
+		bool isConnected() const {
+			return connected;
+		}
+
+		bool isClosed() const {
+			return closed;
+		}
+
+		bool isBound() const {
+			return bounded;
+		}
+
+		int32 accepted();
+
+		int32 setReuseAddr(bool resue);
+
+		int32 setSoLinger(bool state, int32 timeout);
+
+		int32 setKeepAlive(bool keepAlive);
+
+		int32 setReceiveBufferSize(int32 size);
+
+		int32 setSendBufferSize(int32 size);
+
+		int32 setSoTimeout(int32 timeout);
+
+		int32 setTcpNoDelay(bool value);
+
+		virtual InputStream*  getInputStream();
+
+		virtual OutputStream* getOutputStream();
+
+		std::string getLocalAddress() const;
+
+		std::string getRemoteAddress() const;
+
+		uint16 getLocalPort() const;
+
+		uint16 getRemotePort() const;
+
+		int32 getSocketDescriptor()const;
+
+		int32 close();
+
+	private:
+
+		void initSocketImpl(const std::string &remoteIpaddress, uint16 remotePort, const std::string &localIpaddress, uint16 localPort);
+
+	protected:
+
+		bool closed;
+		bool bounded;
+		bool connected;
+		SocketImpl *impl;
+		
+		friend class ServerSocket;
+};
+
+}
+
+#endif /* end of file */

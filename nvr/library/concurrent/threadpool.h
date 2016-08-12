@@ -1,0 +1,84 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				  	 					   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __LIBRARY_CONCURRENT_THREADPOOL_H__
+#define __LIBRARY_CONCURRENT_THREADPOOL_H__
+
+#include "../util/list.h"
+#include "poolthread.h"
+#include "lock.h"
+
+namespace library {
+
+/**
+ * threadpool handle
+ *
+ * NOTE:
+ * task will not be queued if all threads in pool are busy.
+ */
+class ThreadPool : public Synchronize
+{
+	public:
+
+		ThreadPool(uint32 poolNum, std::string &name);
+
+		ThreadPool(uint32 poolNum = 5);
+
+		virtual ~ThreadPool();
+
+	public:
+
+		virtual void excute(Runnable *r);
+
+		virtual void idleNotification() {lock(); notify(); unlock();};
+
+		uint32 size() const {return taskList.size();};
+
+		void poolexit();
+
+	public:
+
+		virtual void lock() {threadlock.lock();};
+
+		virtual bool trylock() {return threadlock.trylock();};
+
+		virtual void unlock() {threadlock.unlock();};
+
+		virtual void wait() {threadlock.wait();};
+
+		virtual bool wait(int64 mills, int32 nases) {
+			return threadlock.wait(mills, nases);
+		};
+
+		virtual void notify() {threadlock.notify();};
+
+		virtual void notifyall() {threadlock.notifyall();};
+		
+	protected:
+
+		List<PoolThread> taskList;
+
+	private:
+		
+		Lock threadlock;
+};
+
+}
+
+#endif /* end of file */

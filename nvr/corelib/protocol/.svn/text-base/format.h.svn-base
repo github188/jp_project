@@ -1,0 +1,95 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __CORELIB_PROTOCOL_FORMAT_H__
+#define __CORELIB_PROTOCOL_FORMAT_H__
+
+#include "../../library/buffer/bytebuffer.h"
+#include "../../common/basetype.h"
+
+namespace library {
+
+	class ByteBuffer;
+}
+
+namespace corelib {
+namespace MTP_NETWORK {
+
+	class Connection;
+	class Request;
+}
+}
+
+namespace corelib {
+namespace protocol {
+
+class DataStructure;
+class Format
+{
+	private:
+
+		Format(const Format&);
+
+		Format& operator= (const Format &);
+
+	public:
+
+		Format();
+
+		virtual ~Format();
+
+	public:
+
+		virtual void setVersion(uint8 version) = 0;
+
+		virtual int32 getVersion() const = 0;
+
+		/**
+         * Stream based marshaling of a Command.
+         *
+         * @param command
+         *      The Command to Marshal
+         * @param request
+         *      The output stream to write the command to.
+         */
+//		virtual void marshal(DataStructure *command, corelib::MTP_NETWORK::Request **request) = 0;
+
+//		virtual void marshal(DataStructure *command, library::DataOutputStream *out) = 0;
+
+		virtual void marshal(DataStructure *command, library::ByteBuffer &buffer) = 0;
+
+		/**
+         * Stream based unmarshaling, Returns a Pointer to the newly unmarshaled Command.
+         *
+         * @param request
+         *      The input stream to read the command from.
+         *
+         * @returns the newly marshaled Command, caller owns the pointer
+         */
+//		virtual DataStructure* unmarshal(corelib::MTP_NETWORK::Connection *, corelib::MTP_NETWORK::Request *request) = 0;
+
+//		virtual DataStructure* unmarshal(corelib::MTP_NETWORK::Connection *, library::DataInputStream *in) = 0;
+
+		virtual DataStructure* unmarshal(corelib::MTP_NETWORK::Connection *, library::ByteBuffer &buffer) = 0;
+};
+
+}
+}
+
+#endif /* end of file */

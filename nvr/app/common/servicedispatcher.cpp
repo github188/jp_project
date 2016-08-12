@@ -1,0 +1,103 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <memory>
+
+#include "../../library/buffer/remotebytearraybuffer.h"
+#include "../../library/buffer/localbytearraybuffer.h"
+#include "../../corelib/protocol/datastructure.h"
+#include "../../corelib/network/connection.h"
+#include "../protocol/cardescriptioninfo.h"
+#include "../common/zhuhaiprotocolconfig.h"
+#include "../../corelib/protocol/format.h"
+#include "../../library/util/log.h"
+#include "servicedispatcher.h"
+
+using namespace library;
+using namespace corelib;
+using namespace corelib::MTP_NETWORK;
+using namespace corelib::protocol;
+using namespace app;
+
+ServiceDispatcher::ServiceDispatcher(FileService &fileService) : wireformat_(NULL), m_fileService(fileService)
+{
+}
+
+ServiceDispatcher::~ServiceDispatcher()
+{
+}
+
+void ServiceDispatcher::onStart(CM::Connection *connection)
+{
+	if (connection == NULL) return;
+
+	connection->setDisableInputBuffer(false);
+	connection->setFlushoutBeforeClose(false);
+	connection->setDeleteByHandler(true);
+}
+
+void ServiceDispatcher::onCommand(CM::Connection *connection, const char *data, int32 len)
+{
+	if (connection == NULL || data == NULL || len == 0) return;
+
+	static uint64 u64c = 1;
+	if (this->wireformat_ != NULL) {
+		NETBUFFER netByteBuffer((uint8*)data, len, 0, len);
+		DataStructure* datastructure(wireformat_->unmarshal(connection, netByteBuffer));
+		if (datastructure != NULL) {
+			std::string messageType = datastructure->getDataStructureType();
+			this->dispatch(messageType, datastructure);
+			delete datastructure;
+
+			Log(LOG_DEBUG, "ServiceDispatcher::onCommand - statistic of Packet: %llu", u64c++);
+		}
+	} else {
+		Log(LOG_ERROR, "ServiceDispatcher::onCommand - no wireFormat setted.");
+	}
+}
+
+void ServiceDispatcher::onEnd(CM::Connection *connection)
+{
+	if (connection == NULL) return;
+
+	connection->setDeleteByHandler(true);
+}
+
+void ServiceDispatcher::setWireFormat(CP::Format *format)
+{
+	this->wireformat_ = format;
+}
+
+void ServiceDispatcher::dispatch(std::string &id, CP::DataStructure *ds)
+{
+	if (ds == NULL) return;
+
+	if (id == CarDescriptionInfo::ID_CAR_INFO) {
+
+		CarDescriptionInfo *carInfo = static_cast<CarDescriptionInfo *>(ds);
+		this->onVehicleData(carInfo);
+	}
+}
+
+void ServiceDispatcher::onVehicleData(CarDescriptionInfo *carInfo)
+{
+	if (carInfo == NULL) return;
+
+	m_fileService.add(carInfo);
+}

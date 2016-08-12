@@ -1,0 +1,137 @@
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network
+END
+connectionhandlerepoll.h
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/connectionhandlerepoll.h
+END
+connectionmanager.h
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/connectionmanager.h
+END
+connection.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/connection.cpp
+END
+connectionhandler.h
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/connectionhandler.h
+END
+connection.h
+K 25
+svn:wc:ra_dav:version-url
+V 174
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/connection.h
+END
+iohandler.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/iohandler.cpp
+END
+ioevent.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/ioevent.cpp
+END
+iohandler.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/iohandler.h
+END
+tcpserver.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/tcpserver.cpp
+END
+ioevent.h
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/ioevent.h
+END
+tcpserver.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/tcpserver.h
+END
+ioconnector.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/ioconnector.cpp
+END
+socketcommondef.h
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/socketcommondef.h
+END
+listener.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 174
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/listener.cpp
+END
+ioconnector.h
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/ioconnector.h
+END
+ioacceptor.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/ioacceptor.cpp
+END
+connectionhandlerepoll.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/connectionhandlerepoll.cpp
+END
+listener.h
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/listener.h
+END
+connectionmanager.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/connectionmanager.cpp
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/Makefile
+END
+connectionhandler.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/CXZX/!svn/ver/5184/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/connectionhandler.cpp
+END
+ioacceptor.h
+K 25
+svn:wc:ra_dav:version-url
+V 174
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/corelib/network/ioacceptor.h
+END

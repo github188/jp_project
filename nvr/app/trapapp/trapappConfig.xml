@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<trapapp>
+	<connection>
+		<server>127.0.0.1</server>
+		<serverPort>40001</serverPort>
+	</connection>
+	
+	<dbConf>
+		<enable>1</enable>
+		<dbIp>192.168.0.130</dbIp>
+		<dbPort>1521</dbPort>
+		<dbUser>si01</dbUser>
+		<dbPass>jp2011</dbPass>
+		<dbSid>ZHSICSDB</dbSid>
+	</dbConf>
+	
+	<ACTIVEMQ>
+		<report>
+			<enable>0</enable>
+			<broker>tcp://172.31.100.190:61616</broker>
+			<producer>JP.SICS.Common</producer>
+			<consumer>JP.SICS.Common</consumer>
+		</report>
+		<command>
+			<enable>1</enable>
+			<broker>tcp://172.31.100.190:61616</broker>
+			<producer>JP.SICS.Common</producer>
+			<consumer>JP.SICS.Common</consumer>
+		</command>
+		<realtime>
+			<enable>1</enable>
+			<broker>tcp://172.31.100.190:61616</broker>
+			<producer>JP.SICS.Common</producer>
+			<consumer>JP.SICS.Common</consumer>
+		</realtime>
+	</ACTIVEMQ>
+	
+	<logMy>
+		<!-- log where: 0: stdout; 1: to file; 2: to file and stdout -->
+		<logWhere>0</logWhere>
+		<!-- 0: debug level above; 2: info level above; 3: warn level above; 4: only error level -->
+		<logLevel>0</logLevel>
+		<!-- size in kb -->
+		<logFileSize>20480</logFileSize>	
+		<logFileName>trapapp.log</logFileName>
+	</logMy>
+</trapapp>

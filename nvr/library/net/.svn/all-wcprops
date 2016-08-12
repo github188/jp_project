@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net
+END
+serversocket.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 174
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/serversocket.cpp
+END
+socketimpl.h
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/socketimpl.h
+END
+tcpsocket.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/tcpsocket.cpp
+END
+socketfactory.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/socketfactory.cpp
+END
+serversocket.h
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/serversocket.h
+END
+tcpsocket.h
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/tcpsocket.h
+END
+socketfactory.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/socketfactory.h
+END
+socket.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/socket.cpp
+END
+socketimpl.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/socketimpl.cpp
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/Makefile
+END
+socket.h
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/CXZX/!svn/ver/4779/trunk/GZ4G/%E5%BC%80%E5%8F%91%E5%BA%93/%E5%BC%80%E5%8F%91%E8%BF%87%E7%A8%8B/4%E6%BA%90%E4%BB%A3%E7%A0%81/ZHKKSJJS_C++/nvr/library/net/socket.h
+END

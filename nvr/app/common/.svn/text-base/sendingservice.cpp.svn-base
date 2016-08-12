@@ -1,0 +1,133 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include "sendingservice.h"
+#include "../../library/util/log.h"
+#include "../../corelib/protocol/format.h"
+#include "../protocol/carbypassdescinfo.h"
+#include "../../library/concurrent/thread.h"
+#include "../../corelib/network/connection.h"
+#include "../../corelib/protocol/formatfactory.h"
+#include "../../library/buffer/localbytearraybuffer.h"
+#include "../../library/buffer/remotebytearraybuffer.h"
+
+using namespace library;
+using namespace corelib;
+using namespace corelib::protocol;
+using namespace corelib::MTP_NETWORK;
+using namespace app;
+
+extern ST_DABIGATE_CONFIG_INFO g_dabigate_config;
+
+////////////////////////////////////////////////////////////////////////////////
+SendingService::SendingService() : m_wireFormat(NULL), m_clientHandler(NULL), m_thread(NULL)
+{
+	m_sendList.clear();
+	m_thread = new Thread(this, "SEND");
+	m_thread->start();
+	
+	configInit();
+}
+
+SendingService::~SendingService()
+{
+	if (m_thread != NULL) delete m_thread;
+	m_thread = NULL;
+
+	if (m_clientHandler != NULL) delete m_clientHandler;
+	m_clientHandler = NULL;
+}
+
+void SendingService::configInit()
+{
+	m_enable = g_dabigate_config.sendingService.enable;
+	m_serverport = g_dabigate_config.sendingService.serverPort;
+	m_serverIp = g_dabigate_config.sendingService.serverIp;
+	
+	if (!m_enable) return;
+
+	m_clientHandler = m_connector.createConnection(m_serverIp, m_serverport);
+	if (m_clientHandler == NULL) {
+		Log(LOG_ERROR, "SendingService::configInit - connect to forward server: %s:%d FAIL.", m_serverIp.c_str(), m_serverport);
+	} else {
+		Log(LOG_ERROR, "SendingService::configInit - connect to forward server: %s:%d SUCCESS.", m_serverIp.c_str(), m_serverport);
+	}
+
+	m_wireFormat = FormatFactory::getInstance().findFormat("zhuhai");
+}
+
+void SendingService::run()
+{
+	while (1) {
+
+		if (m_sendList.empty()) {
+			Thread::sleep(10);
+		} else {
+			SENDLIST t;
+			t.clear();
+			m_lock.lock();
+			t.swap(m_sendList);
+			m_lock.unlock();
+
+			SENDLIST::iterator it = t.begin();
+			for (; it != t.end(); ++it) {
+				doSend(&*it);
+			}
+		}
+	}
+}
+
+void SendingService::send(ST_CAR_DESCRIPTION_INFO *carInfo)
+{
+	if (carInfo == NULL) return;
+	
+	m_lock.lock();
+	m_sendList.push_back(*carInfo);
+	m_lock.unlock();
+}
+
+int32 SendingService::doSend(ST_CAR_DESCRIPTION_INFO *carInfo)
+{
+	if (!m_enable) return -1;
+	
+	if (m_clientHandler == NULL) {
+		configInit();
+	}
+
+	if (m_clientHandler != NULL) {
+		CarBypassDescInfo carDescInfo;
+		NETBUFFER buffer(MAX_BUFFER_SIZE_05k);
+
+		carDescInfo.setAll(carInfo);
+		if (m_wireFormat != NULL) {
+			m_wireFormat->marshal(&carDescInfo, buffer);
+			bool bSended = m_clientHandler->send((const char *)buffer.array(), buffer.limit(), true);
+			if (!bSended) {
+				Log(LOG_ERROR, "SendingService::send - send to forward server fail !!!!!!!");
+				delete m_clientHandler;
+				m_clientHandler = NULL;
+				configInit();
+			} else {
+				Log(LOG_DEBUG, "SendingService::send - send to forward server SUCCESS");
+			}
+		}
+	}
+	
+	return 0;
+}

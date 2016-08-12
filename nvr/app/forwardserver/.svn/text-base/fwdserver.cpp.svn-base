@@ -1,0 +1,133 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+
+#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <netinet/in.h>
+
+#include "dataforward.h"
+#include "../common/eprotocol.h"
+#include "../../library/util/log.h"
+#include "../thirdlib/xml/tinystr.h"
+#include "../thirdlib/xml/tinyxml.h"
+#include "../protocol/zhuhaiformat.h"
+#include "../common/defaultIOHandler.h"
+#include "../../library/util/singleton.h"
+#include "../../library/util/logmanager.h"
+#include "../../corelib/network/ioacceptor.h"
+#include "../../library/util/activelibrary.h"
+#include "../../corelib/common/activecorelib.h"
+#include "../../corelib/protocol/formatfactory.h"
+#include "../../corelib/network/connectionmanager.h"
+
+using namespace library;
+using namespace corelib;
+using namespace corelib::protocol;
+using namespace corelib::MTP_NETWORK;
+using namespace app;
+
+ST_FWDSERVER_CONFIG_INFO g_fwdserver_config;
+
+bool initAppsConfig(std::string configFile)
+{
+	TiXmlElement *pRoot = NULL;
+	bool bloadok = false;
+	TiXmlDocument doc;
+
+	if (access(configFile.c_str(), 0) == -1) {
+		printf("==================================================\n");
+		printf("===== !!! Fwdserver Config File Not Exist !!! ====\n");
+		printf("==================================================\n");
+		return false;
+	}
+
+	bloadok = doc.LoadFile(configFile.c_str());
+	if (!bloadok) {
+		printf("==================================================\n");
+		printf("===== !!! Load Fwdserver Config File Fail !!! ====\n");
+		printf("==================================================\n");
+		return false;
+	}
+
+	pRoot = doc.RootElement();
+	TiXmlHandle handle(pRoot);
+
+	TiXmlElement *pElem = NULL;
+	pElem = handle.FirstChild("connection").FirstChild("serverPort").ToElement();
+	g_fwdserver_config.serverPort = (uint16)atoi(pElem->GetText());
+
+	//logmy
+	pElem = handle.FirstChild("logMy").FirstChild("logWhere").ToElement();
+	g_fwdserver_config.logMyConfig.logWhere = (uint16)atoi(pElem->GetText());
+	pElem = handle.FirstChild("logMy").FirstChild("logLevel").ToElement();
+	g_fwdserver_config.logMyConfig.logLevel = (uint16)atoi(pElem->GetText());
+	pElem = handle.FirstChild("logMy").FirstChild("logFileSize").ToElement();
+	g_fwdserver_config.logMyConfig.logFileSize = (uint16)atoi(pElem->GetText());
+	pElem = handle.FirstChild("logMy").FirstChild("logFileName").ToElement();
+	g_fwdserver_config.logMyConfig.logFileName = pElem->GetText();
+
+	return true;
+}
+
+int main(int argc, char **argv)
+{
+	/* daemonize */
+	::daemon(1,1);
+	
+	system("rm -f fwdserver.log");
+	signal(SIGPIPE, SIG_IGN);
+	if (!initAppsConfig(std::string("fwdserverConfig.xml"))) {
+		return -1;
+	}
+	DefaultLog::initialize(g_fwdserver_config.logMyConfig.logLevel, g_fwdserver_config.logMyConfig.logWhere,  
+						   g_fwdserver_config.logMyConfig.logFileName, g_fwdserver_config.logMyConfig.logFileSize);
+	
+	ActiveLibrary::initializeLibrary();
+	ActiveCorelib::initializeCoreLibrary();
+
+	Log(LOG_INFO, "**************************************************");
+	Log(LOG_INFO, "**************************************************");
+	Log(LOG_INFO,  "*   Fwdserver Build Time: %s %s   *", __DATE__, __TIME__);
+	Log(LOG_INFO, "**************************************************");
+	Log(LOG_INFO, "**************************************************");
+
+	FormatFactory::getInstance().registerFormat("zhuhai", new ZhuHaiFormat((uint8)1));
+
+	ConnectionManager manager;
+	DataForward forward(manager);
+	forward.setWireFormat(FormatFactory::getInstance().findFormat("zhuhai"));
+	IOAcceptor acceptor(new DefaultIOHandler(&forward), true);
+	acceptor.bind(g_fwdserver_config.serverPort, 5000);
+	acceptor.start();
+	
+	while (1)
+	{
+		sleep(1);
+	}
+
+	ActiveCorelib::shutdownCoreLibrary();
+	ActiveLibrary::shutdownLibrary();
+	
+	return 0;
+}

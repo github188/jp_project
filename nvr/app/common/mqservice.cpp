@@ -1,0 +1,489 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include "mqservice.h"
+#include "../../library/util/log.h"
+#include "../../library/util/system.h"
+#include "../../library/concurrent/thread.h"
+
+using namespace library;
+using namespace app;
+
+extern std::map<std::string, ST_DEVICE_INFO> g_devinfomap;
+extern ST_TRAPAPP_CONFIG_INFO g_trapapp_config;
+////////////////////////////////////////////////////////////////////////////////
+static void getdataitem(std::string &dst, char *src, size_t len)
+{
+	char str[MAX_BUFFER_SIZE_01k] = {0};
+	size_t l = (len > sizeof(str) - 1) ? (sizeof(str) - 1) : len;
+
+	dst.clear();
+	if (src == NULL || len == 0)
+	{
+		dst += "";
+		return;
+	}
+	::memcpy(str, src, l);
+	dst += str;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+CmsMQClient::CmsMQClient(const std::string& brokerURI, const std::string& prodestURI,
+						 const std::string& condestURI, bool useTopic, bool clientAck) :
+				connection(NULL), session(NULL),prodest(NULL), condest(NULL), producer(NULL),
+				consumer(NULL), bUseTopic(useTopic), bClientAck(clientAck), brokerURI(brokerURI),
+				prodestURI(prodestURI), condestURI(condestURI), m_bInitOk(false), m_listener(NULL)
+{
+	CmsMqClientInit();
+}
+
+CmsMQClient::~CmsMQClient()
+{
+	cleanup();
+}
+
+void CmsMQClient::CmsMqClientInit()
+{
+	std::auto_ptr<activemq::core::ActiveMQConnectionFactory> connectionFactory(new activemq::core::ActiveMQConnectionFactory(brokerURI));
+
+	try {
+        connection = connectionFactory->createConnection();
+        connection->start();
+    } catch (cms::CMSException &e) {
+        e.printStackTrace();
+		cleanup();
+		return ;
+    }
+
+	// Create a Session
+    if( bClientAck ) {
+        session = connection->createSession(cms::Session::CLIENT_ACKNOWLEDGE);
+    } else {
+        session = connection->createSession(cms::Session::AUTO_ACKNOWLEDGE);
+    }
+
+	// Create the destination (Topic or Queue)
+    if(bUseTopic) {
+		prodest = session->createTopic(prodestURI);
+		condest = session->createTopic(condestURI);
+    } else {
+        prodest = session->createQueue(prodestURI);
+		condest = session->createQueue(condestURI);
+    }
+
+	// Create a MessageProducer from the Session to the Topic or Queue
+    producer = session->createProducer(prodest);
+    producer->setDeliveryMode(cms::DeliveryMode::NON_PERSISTENT);
+	consumer = session->createConsumer(condest);
+
+	m_bInitOk = true;
+	Log(LOG_INFO, "CmsMQClient::CmsMqClientInit - MQClient[broker: %s, producer: %s, consumer: %s] init success.", 
+		brokerURI.c_str(), prodestURI.c_str(), condestURI.c_str());
+}
+
+void CmsMQClient::setMessageListener(cms::MessageListener *listener)
+{
+	this->m_listener = listener;
+	if (m_bInitOk) consumer->setMessageListener(this->m_listener);
+}
+
+void CmsMQClient::sendMessage(std::string &msg)
+{
+	if (!m_bInitOk) {
+
+		Log(LOG_WARN, "CmsMQClient::sendMessage - !!!! MQ Client not inited !!!!");
+		return ;
+	}
+	
+	try {
+		cms::TextMessage* message = session->createTextMessage(msg);
+		producer->send(message);
+		msg.clear();
+		delete message;
+    } catch (cms::CMSException& e) {
+        e.printStackTrace();
+		Log(LOG_WARN, "CmsMQClient::sendMessage - cms server is closed !!!!!\n");
+		cleanup();
+		sleep(30);
+		CmsMqClientInit();
+		this->setMessageListener(this->m_listener);
+		sleep(30);
+    }
+}
+
+void CmsMQClient::cleanup()
+{
+	m_bInitOk = false;
+	
+    // Destroy resources.
+    try{
+    	if( prodest != NULL ) delete prodest;
+    } catch (cms::CMSException& e ) { e.printStackTrace(); }
+	prodest = NULL;
+
+	try{
+		if( condest!= NULL ) delete condest;
+    } catch (cms::CMSException& e ) { e.printStackTrace(); }
+	condest = NULL;
+
+	try{
+        if( producer != NULL ) delete producer;
+    }catch ( cms::CMSException& e ) { e.printStackTrace(); }
+    producer = NULL;
+
+    // Close open resources.
+    try{
+        if( session != NULL ) session->close();
+        if( connection != NULL ) connection->close();
+    }catch ( cms::CMSException& e ) { e.printStackTrace(); }
+
+    try{
+        if( session != NULL ) delete session;
+    }catch ( cms::CMSException& e ) { e.printStackTrace(); }
+    session = NULL;
+
+	try{
+        if( connection != NULL ) delete connection;
+    }catch ( cms::CMSException& e ) { e.printStackTrace(); }
+    connection = NULL;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+MQService::MQService() : m_go(false), m_thread(NULL), m_MqSendClient(NULL), m_MqRecvClient(NULL), m_MqRealtimeClient(NULL)
+{
+	m_callback.clear();
+	mqServiceInit();
+	m_thread = new Thread(this, "MQSER");
+}
+
+MQService::~MQService()
+{
+	std::map<std::string, IMQCallback*>::iterator it;
+
+	it = m_callback.begin();
+	for (; it != m_callback.end(); ++it) {
+		IMQCallback *cb = it->second;
+		if (cb != NULL) {
+			delete cb;
+		}
+	}
+	m_callback.clear();
+
+	delete m_MqSendClient; m_MqSendClient = NULL;
+	delete m_MqRecvClient; m_MqRecvClient = NULL;
+	delete m_MqRealtimeClient; m_MqRealtimeClient = NULL;
+	delete m_thread;
+}
+
+void MQService::start()
+{
+	m_go = true;
+	if (m_thread != NULL) m_thread->start();
+}
+
+void MQService::stop()
+{
+	m_go = false;
+}
+
+void MQService::mqServiceInit()
+{
+	bool clientack = false;
+	bool usetopic = true;
+
+	/* alarm active mq config */
+	m_sendConfig = g_trapapp_config.reportMQ;
+	if (m_sendConfig.enable) {
+		m_MqSendClient = new CmsMQClient(m_sendConfig.broker, m_sendConfig.producer, 
+										 m_sendConfig.consumer, usetopic, clientack);
+	}
+
+	/* set control config */
+	m_recvConfig = g_trapapp_config.commandMQ;
+	if (m_recvConfig.enable) {
+		m_MqRecvClient = new CmsMQClient(m_recvConfig.broker, m_recvConfig.producer, 
+										 m_recvConfig.consumer, usetopic, clientack);
+		if (m_MqRecvClient) m_MqRecvClient->setMessageListener(this);
+	}
+
+	/* real time update config */
+	m_realtimeConfig = g_trapapp_config.realtimeMQ;
+	if (m_realtimeConfig.enable) {
+		m_MqRealtimeClient = new CmsMQClient(m_realtimeConfig.broker, m_realtimeConfig.producer, 
+										 	 m_realtimeConfig.consumer, usetopic, clientack);
+	}
+}
+
+void MQService::add(ST_CAR_TRAP_INFO *trap)
+{
+	if (m_sendConfig.enable && m_MqSendClient != NULL) {
+		std::string trapInUtf8 = assembleTrapInfo(trap);
+		m_sendList.add(trapInUtf8);
+	}
+}
+
+void MQService::add(ST_CAR_DESCRIPTION_INFO &carInfo)
+{
+	if (m_MqRealtimeClient != NULL && m_realtimeConfig.enable) {
+		std::string carDescInfo = assembleCarDescStringInfo(carInfo);
+		m_realtimeList.add(carDescInfo);
+	}
+}
+
+void MQService::onMessage(const cms::Message* message)
+{
+	try
+    {
+        const cms::TextMessage* textMessage = dynamic_cast<const cms::TextMessage* >(message);
+        std::string msg = "";
+
+        if( textMessage != NULL ) {
+            msg = textMessage->getText();
+        } else {
+            msg = "NOT A TEXTMESSAGE!";
+        }
+		
+		update(msg);
+    } catch (cms::CMSException& e) {
+        e.printStackTrace();
+    }
+}
+
+void MQService::run()
+{
+	while (m_go)
+	{
+		if (m_sendList.size() > 0 || m_realtimeList.size() > 0) {
+			while (m_sendList.size() > 0)
+			{
+				std::string text = m_sendList.next();
+				if (m_MqSendClient != NULL) {
+					m_MqSendClient->sendMessage(text);
+				}
+			}
+
+			while (m_realtimeList.size() > 0)
+			{
+				std::string text = m_realtimeList.next();
+				if (m_realtimeConfig.enable && m_MqRealtimeClient != NULL) {
+					m_MqRealtimeClient->sendMessage(text);
+				}
+			}
+		} else {
+			Thread::sleep(200);
+		}
+	}
+}
+
+std::string MQService::assembleTrapInfo(ST_CAR_TRAP_INFO *psttrap)
+{
+	std::map<std::string, ST_DEVICE_INFO>::iterator it;
+	char utf8str[MAX_BUFFER_SIZE_04k] = {0};//disgust transfer
+	char str[MAX_BUFFER_SIZE_064] = {0};
+	ST_DEVICE_INFO stdevinfo;
+	std::string trapinfo;
+	std::string retstr;
+	std::string devsn;
+	
+	if (psttrap == NULL) return "";
+
+	::memset(&stdevinfo, 0, sizeof(stdevinfo));
+	if (psttrap == NULL) trapinfo = "";
+
+	if (::strlen(psttrap->stcarinfo.urlInfo.url[0]) > 0 ||
+		::strlen(psttrap->stcarinfo.urlInfo.url[1]) > 0)
+		::memcpy(str, psttrap->stcarinfo.plateFNo, sizeof(psttrap->stcarinfo.plateFNo));
+	else if (::strlen(psttrap->stcarinfo.urlInfo.url[2]) > 0 ||
+			 ::strlen(psttrap->stcarinfo.urlInfo.url[3]) > 0)
+		::memcpy(str, psttrap->stcarinfo.plateTNo, sizeof(psttrap->stcarinfo.plateTNo));
+	else
+		::memcpy(str, psttrap->stcarinfo.plateFNo, sizeof(psttrap->stcarinfo.plateFNo));
+		
+	trapinfo = "B01,";
+	trapinfo += ","; //BJXXKH
+	
+	trapinfo += psttrap->bkxxbh; //bkxxbh
+	trapinfo += ",";
+
+	trapinfo += str; //hphm
+	trapinfo += ",";
+	
+	::memset(str, 0, sizeof(str));
+	::memcpy(str, psttrap->stcarinfo.ptime, 19);
+	trapinfo += str; //jgsj
+	trapinfo += ",";
+	
+	::memset(str, 0, sizeof(str));
+	::memcpy(str, psttrap->stcarinfo.blockSn, sizeof(psttrap->stcarinfo.blockSn));
+	trapinfo += str; //kkbh
+	trapinfo += ",";
+	
+	trapinfo += psttrap->bjlx;
+	trapinfo += ",";
+
+	if (::strlen(psttrap->stcarinfo.urlInfo.url[0]) > 0 || ::strlen(psttrap->stcarinfo.urlInfo.url[1]) > 0)
+		trapinfo += psttrap->stcarinfo.urlInfo.url[0];
+	else if (::strlen(psttrap->stcarinfo.urlInfo.url[2]) > 0 || ::strlen(psttrap->stcarinfo.urlInfo.url[3]) > 0)
+		trapinfo += psttrap->stcarinfo.urlInfo.url[2];
+	else
+		trapinfo += psttrap->stcarinfo.urlInfo.url[0];
+	trapinfo += ",";
+
+	struct tm *ptm = NULL;
+	char tmstr[32] = {0};
+	time_t tsec = time(NULL);
+	ptm = localtime(&tsec);
+	::sprintf(tmstr, "%04d-%02d-%02d %02d:%02d:%02d", (1900 + ptm->tm_year), 
+			  (1 + ptm->tm_mon), ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
+	trapinfo += tmstr;
+	trapinfo += ",";
+	
+	trapinfo += psttrap->lxdh;
+	trapinfo += ",";
+
+	devsn.clear();
+	::memset(str, 0, sizeof(str));
+	::memcpy(str, psttrap->stcarinfo.devSn, sizeof(psttrap->stcarinfo.devSn));
+	devsn = str;
+	it = g_devinfomap.find(devsn);
+	if (it != g_devinfomap.end())
+	{
+		stdevinfo = it->second;
+	}
+	trapinfo += stdevinfo.kkmc;
+	trapinfo += ",";
+	
+	trapinfo += psttrap->dxfsbs;
+	trapinfo += ",";
+
+	trapinfo += stdevinfo.direction;
+	trapinfo += "³µµÀ";
+	trapinfo += psttrap->stcarinfo.laneSn;
+	trapinfo += ",";
+
+	std::string clxxbh;
+	std::string t;
+	clxxbh.clear();
+	t.clear();
+	getdataitem(clxxbh, psttrap->stcarinfo.blockSn, sizeof(psttrap->stcarinfo.blockSn));
+	getdataitem(t, stdevinfo.direction, sizeof(stdevinfo.direction));
+	clxxbh += t;
+	getdataitem(t, psttrap->stcarinfo.laneSn, sizeof(psttrap->stcarinfo.laneSn));
+	clxxbh += t;
+	getdataitem(t, psttrap->stcarinfo.vehiSn, sizeof(psttrap->stcarinfo.vehiSn));
+	clxxbh += t;
+	
+	trapinfo += clxxbh;
+
+	int32 iRet = System::g2u((char*)trapinfo.c_str(), trapinfo.size(), utf8str, sizeof(utf8str));
+	if (iRet < 0 || strlen(utf8str)<= 0) {
+		Log(LOG_DEBUG, "MQService::assembleTrapInfo - trap info: %s", trapinfo.c_str());
+		return trapinfo;
+	}
+	retstr = utf8str;
+	Log(LOG_DEBUG, "MQService::assembleTrapInfo - trap ret info: %s", retstr.c_str());
+	
+	return retstr;
+}
+
+std::string MQService::assembleCarDescStringInfo(ST_CAR_DESCRIPTION_INFO &carInfo)
+{
+	char utf8str[MAX_BUFFER_SIZE_04k] = {0};//disgust transfer
+	char str[MAX_BUFFER_SIZE_064] = {0};
+	std::string msg, t;
+
+	msg += "A01,123,";
+	getdataitem(t, carInfo.blockSn, sizeof(carInfo.blockSn));
+	msg += t; msg += ",";
+
+	getdataitem(t, carInfo.laneSn, sizeof(carInfo.laneSn));
+	msg += t; msg += ",";
+
+	getdataitem(t, carInfo.plateFNo, sizeof(carInfo.plateFNo));
+	msg += t; msg += ",";
+
+	/* bzzd */
+	msg += ",";
+
+	getdataitem(t, carInfo.plateFCol, sizeof(carInfo.plateFCol));
+	msg += t; msg += ",";
+
+	getdataitem(t, carInfo.vehiCol, sizeof(carInfo.vehiCol));
+	msg += t; msg += ",";
+
+	memset(str, 0, sizeof(str));
+	memcpy(str, carInfo.ptime, 19);
+	msg += str; //jgsj
+	msg += ",";
+
+	memset(str, 0, sizeof(str));
+	sprintf(str, "%f", carInfo.fSpeed);
+	msg += str; msg += ",";
+
+	getdataitem(t, carInfo.urlInfo.url[0], strlen(carInfo.urlInfo.url[0]));
+	msg += t; msg += ",";
+
+	/* ip */
+	msg += ",";
+
+	getdataitem(t, carInfo.devSn, sizeof(carInfo.devSn));
+	msg += t; msg += ",";
+
+	getdataitem(t, carInfo.vehiCode, sizeof(carInfo.vehiCode));
+	msg += t; msg += ",";
+
+	getdataitem(t, carInfo.vehiBrand, sizeof(carInfo.vehiBrand));
+	msg += t; msg += ",";
+
+	memset(str, 0, sizeof(str));
+	sprintf(str, "%d", carInfo.vehiLen);
+	msg += str; msg += ",";
+
+	/* tx3 */
+	getdataitem(t, carInfo.urlInfo.url[2], sizeof(carInfo.urlInfo.url[2]));
+	msg += t;
+
+	int32 iRet = System::g2u((char*)msg.c_str(), msg.size(), utf8str, sizeof(utf8str));
+	if (iRet < 0 || strlen(utf8str)<= 0) {
+		Log(LOG_DEBUG, "MQService::assembleCarDescStringInfo - before translate to utf8 car info: %s", msg.c_str());
+		return msg;
+	}
+	Log(LOG_DEBUG, "MQService::assembleCarDescStringInfo - after translate to utf8 car info: %s", utf8str);
+	
+	return std::string(utf8str);
+}
+
+void MQService::update(std::string &command)
+{
+	if (command.size() < 4) return;
+
+	if (!strncmp(command.c_str(), "C05", ::strlen("C05")) || !strncmp(command.c_str(), "C02", ::strlen("C02")))
+	{
+		Log(LOG_INFO, "update bkxx config: %s", command.c_str());
+
+		std::string headStr;
+		headStr.append(command, 0, 3); //headStr.assign(command, 0, 3);
+
+		Log(LOG_DEBUG, "MQService::update - OUT: size[%d]", m_callback.size());
+		std::map<std::string, IMQCallback*>::iterator iter = m_callback.find(headStr);
+		if (iter != m_callback.end()) {
+			iter->second->Execute(command);
+		}
+	}
+}

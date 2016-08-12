@@ -1,0 +1,82 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __APP_COMMON_FILESERVICE_H__
+#define __APP_COMMON_FILESERVICE_H__
+
+#include <vector>
+#include <string>
+
+#include "dbservice.h"
+#include "sendingservice.h"
+#include "../common/eprotocol.h"
+#include "../../library/common/runnable.h"
+
+namespace library {
+
+	class ThreadPool;
+}
+
+namespace app {
+
+class CarDescriptionInfo;
+class FileService : public library::Runnable
+{
+	private:
+
+		FileService(const FileService&);
+		FileService& operator= (const FileService&);
+
+	public:
+
+		FileService(DbService &dbservice);
+		~FileService();
+
+	public: //inheritDoc
+
+		virtual void run();
+		virtual bool bNeedDestroyed() const {
+			return false;
+		}
+
+	public:
+
+		void add(CarDescriptionInfo *carInfo);
+
+	private:
+
+		void serviceInit();
+		std::string generateStorePath(ST_CAR_DESCRIPTION_INFO *info);
+		std::string getStoreDir();
+		uint64 getDiskRemainSpace(std::string &rootPrefix, std::string &dir);
+
+	private:
+
+		uint64 alarmSize_;
+		std::string urlHeader_;
+		std::string storeRoot_;
+		DbService &m_dbservice;
+		SendingService m_sending;
+		library::ThreadPool *threadpool_;
+		std::vector<std::string> storeDirections;
+};
+
+}
+
+#endif /* end of file */

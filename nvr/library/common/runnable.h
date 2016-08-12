@@ -1,0 +1,55 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by Y.S.G   										   *
+ *   ysgen0217@163.com   												   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __LIBRARY_COMMON_RUNNABLE_H__
+#define __LIBRARY_COMMON_RUNNABLE_H__
+
+#include "../../common/basetype.h"
+namespace library {
+
+class Runnable
+{
+	public:
+
+		Runnable() {};
+
+		virtual ~Runnable() {};
+
+	public:
+
+		/**
+		 * When an object implementing interface Runnable is used to 
+		 * create a thread, starting the thread causes the object's run 
+		 * method to be called in that separately executing thread.
+		 */
+		virtual void run() = 0;
+
+		/**
+		 * indicate that whether this task is destroyed by the runner thread or not.
+		 * TRUE for deleting by thread user, FALSE for delete by the creator.
+		 */
+		virtual bool bNeedDestroyed() const {
+
+			return true;
+		}
+};
+
+}
+
+#endif /* end of file */

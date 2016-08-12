@@ -1,0 +1,204 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __LIBRARY_BUFFER_BYTEBUFFER_H__
+#define __LIBRARY_BUFFER_BYTEBUFFER_H__
+
+#include <string>
+#include <vector>
+#include "databuffer.h"
+
+namespace library {
+
+class ByteBuffer : public DataBuffer
+{
+	private:
+
+		ByteBuffer& operator= (const ByteBuffer &);
+
+	public:
+
+		ByteBuffer(int32 capacity);
+
+		virtual ~ByteBuffer();
+
+	public:
+
+		std::string toString() const;
+
+		ByteBuffer& get(std::vector<uint8> &buffer);
+
+		ByteBuffer& get(uint8* buffer, int32 size, int32 offset, int32 length);
+
+		ByteBuffer& put(ByteBuffer& src);
+
+		ByteBuffer& put(const uint8* buffer, int32 size, int32 offset, int32 length);
+
+		ByteBuffer& put(std::vector<uint8> &buffer);
+
+	public:
+
+		virtual uint8* array() = 0;
+
+		virtual const uint8* array() const = 0;
+
+		virtual int32 arrayOffset() const = 0;
+
+		/**
+         * Compacts this buffer
+         *
+         * The bytes between the buffer's current position and its limit, if any, are
+         * copied to the beginning of the buffer. That is, the byte at index
+         * p = position() is copied to index zero, the byte at index p + 1 is copied
+         * to index one, and so forth until the byte at index limit() - 1 is copied
+         * to index n = limit() - 1 - p. The buffer's position is then set to n+1 and
+         * its limit is set to its capacity. The mark, if defined, is discarded.
+         *
+         * The buffer's position is set to the number of bytes copied, rather than to
+         * zero, so that an invocation of this method can be followed immediately by
+         * an invocation of another relative put method.
+         *
+         * @returns a reference to this ByteBuffer.
+         */
+		virtual ByteBuffer& compact() = 0;
+
+		/**
+         * Creates a new byte buffer that shares this buffer's content.
+         *
+         * The content of the new buffer will be that of this buffer. Changes to this
+         * buffer's content will be visible in the new buffer, and vice versa; the two
+         * buffers' position, limit, and mark values will be independent.
+         *
+         * The new buffer's capacity, limit, position, and mark values will be identical
+         * to those of this buffer. The new buffer will be read-only if, and only if,
+         * this buffer is read-only.
+         *
+         * @returns a new Byte Buffer which the caller owns.
+         */
+        virtual ByteBuffer* duplicate() = 0;
+
+		/**
+         * Relative get method. Reads the byte at this buffer's current position, and
+         * then increments the position.
+         *
+         * @returns The byte at the buffer's current position.
+         *
+         */
+		virtual uint8 get() const = 0;
+
+		/**
+         * Absolute get method. Reads the byte at the given index.
+         *
+         * @param index
+         *      The index in the Buffer where the byte is to be read.
+         *
+         * @returns the byte that is located at the given index.
+         *
+         */
+		virtual uint8 get(int32 index) const = 0;
+
+		/**
+         * Reads the next byte at this buffer's current position, and then increments
+         * the position by one
+         *
+         * @returns the next char in the buffer.
+         *
+         */
+		virtual char getChar() = 0;
+
+		/**
+         * Reads one byte at the given index and returns it.
+         *
+         * @param index
+         *      The index in the Buffer where the byte is to be read.
+         *
+         * @returns the char at the given index in the buffer
+         *
+         */
+		virtual char getChar(int32 index) const = 0;
+
+		virtual double getDouble() = 0;
+
+		virtual double getDouble( int32 index ) const = 0;
+
+		virtual float getFloat() = 0;
+
+		virtual float getFloat( int32 index ) const = 0;
+
+		virtual int64 getLong() = 0;
+
+		virtual int64 getLong( int32 index ) const = 0;
+
+		virtual int32 getInt() = 0;
+
+		virtual int32 getInt( int32 index ) const = 0;
+
+		virtual int16 getShort() = 0;
+
+		virtual int16 getShort( int32 index ) const = 0;
+
+		virtual uint8* getRawBytes(uint8* value, int32 length) = 0;
+
+		virtual uint8* getRawBytes(int32 index, uint8* value, int32 length)const = 0;
+
+		/**
+         * Writes the given byte into this buffer at the given index.
+         *
+         * @param index - position in the Buffer to write the data
+         * @param value - the byte to write.
+         * @param length- the length of bytes.
+         *
+         * @returns a reference to this buffer.
+         *
+         */
+		virtual int32 put(int32 index, const char* value, int32 length) = 0;
+
+		virtual ByteBuffer& putChar(char value) = 0;
+
+		/* index starts at 0 */
+		virtual ByteBuffer& putChar(int32 index, char value) = 0;
+
+		virtual ByteBuffer& putDouble(double value) = 0;
+
+		virtual ByteBuffer& putDouble(int32 index, double value) = 0;
+
+		virtual ByteBuffer& putFloat(float value) = 0;
+
+		virtual ByteBuffer& putFloat(int32 index, float value) = 0;
+
+		virtual ByteBuffer& putLong(int64 value) = 0;
+
+		virtual ByteBuffer& putLong(int32 index, int64 value) = 0;
+
+		virtual ByteBuffer& putInt(int32 value) = 0;
+
+		virtual ByteBuffer& putInt(int32 index, int32 value) = 0;
+
+		virtual ByteBuffer& putShort(int16 value) = 0;
+
+		virtual ByteBuffer& putShort(int32 index, int16 value) = 0;
+
+		virtual ByteBuffer& putRawBytes(const uint8* value, int32 length) = 0;
+
+		virtual ByteBuffer& putRawBytes(int32 index, const uint8* value, int32 length) = 0;
+};
+
+}
+
+#endif /* end of file */

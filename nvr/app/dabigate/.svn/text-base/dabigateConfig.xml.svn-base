@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<dabigate>
+	<connection>
+		<lConnectionPort>30001</lConnectionPort>
+		<sConnectionPort>30000</sConnectionPort>
+	</connection>
+	
+	<!-- 1: data resend to forwardserver. 0: do not send -->
+	<sendingService>
+		<enable>1</enable>
+		<serverIp>127.0.0.1</serverIp>
+		<serverPort>40001</serverPort>
+	</sendingService>
+	
+	<pictureStore>
+		<enable>1</enable>
+		<threadNum>15</threadNum>
+		<urlPrefix>http://192.168.0.28:8088/</urlPrefix>
+		<pictureRoot>/home/app/apache-tomcat-6-bussiness/webapps/</pictureRoot>
+		<direntNum>8</direntNum>
+		<dirent1>Images1</dirent1>
+		<dirent2>Images2</dirent2>
+		<dirent3>Images3</dirent3>
+		<dirent4>Images4</dirent4>
+		<dirent5>Images5</dirent5>
+		<dirent6>Images6</dirent6>
+		<dirent7>Images7</dirent7>
+		<dirent8>Images8</dirent8>
+		<direntSkipOffSize>50</direntSkipOffSize>
+	</pictureStore>
+	
+	<dbConf>
+		<enable>1</enable>
+		<dbIp>192.168.0.130</dbIp>
+		<dbPort>1521</dbPort>
+		<dbUser>si01</dbUser>
+		<dbPass>jp2011</dbPass>
+		<dbSid>ZHSICSDB</dbSid>
+	</dbConf>
+	
+	<logMy>
+		<!-- log where: 0: stdout; 1: to file; 2: to file and stdout -->
+		<logWhere>0</logWhere>
+		<!-- 0: debug level above; 2: info level above; 3: warn level above; 4: only error level -->
+		<logLevel>0</logLevel>
+		<!-- size in kb -->
+		<logFileSize>20480</logFileSize>	
+		<logFileName>dabigate.log</logFileName>
+	</logMy>
+</dabigate>

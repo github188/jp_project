@@ -1,0 +1,141 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by Y.S.G   										   *
+ *   ysgen0217@163.com   												   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <string.h>
+
+#include "../common/exception.h"
+
+using namespace library;
+
+Exception::Exception() : message(), stackstrace()
+{
+}
+
+Exception::Exception(const Exception & ex) : message(), stackstrace()
+{
+	*this = ex;
+}
+
+Exception::Exception(const char * file, const int32 linenumber, int32 codeid) : 
+			message(), stackstrace()
+{
+//	char exceptiondes[MAX_BUFFER_SIZE_128] = {0};
+	std::ostringstream stream;
+
+	stream << "exception code: " << "[" << codeid << "]";
+	message.assign(stream.str().c_str(), stream.str().size());
+	
+	// Set the first mark for this exception.
+    setmark(file, linenumber);
+}
+
+Exception::Exception(const char * file, const int32 linenumber, const char * msg, ...)
+			 : message(), stackstrace()
+{
+	va_list vargs;
+    va_start(vargs, msg);
+    buildmessage(msg, vargs);
+    va_end(vargs);
+
+    // Set the first mark for this exception.
+    setmark(file, linenumber);
+}
+
+Exception::~Exception() throw()
+{
+}
+
+const char *Exception::what() const throw()
+{
+	return message.c_str();
+}
+
+void Exception::setmessage(const char *msg, ...)
+{
+	va_list vargs;
+    va_start(vargs, msg);
+    buildmessage(msg, vargs);
+    va_end(vargs);
+}
+
+void Exception::setmark(const char *file, const int32 linenumber)
+{
+	stackstrace.push_back(std::make_pair(std::string(file), (int32)linenumber));
+}
+
+std::string Exception::getmessage() const
+{
+	return message;
+}
+
+std::vector<std::pair<std::string, int32> > Exception::getstacktrace() const
+{
+	return stackstrace;
+}
+
+std::string Exception::getstacktracestring() const
+{
+	std::ostringstream stream;
+
+	stream << message << std::endl;
+	for (uint32 ix = 0; ix < stackstrace.size(); ++ix)
+	{
+		stream << "\tFILE: " << stackstrace[ix].first;
+		stream << ", LINE: " << stackstrace[ix].second;
+		stream << std::endl;
+	}
+
+	//return the string from the output stream
+	return stream.str();
+}
+
+void Exception::printstackstrace(std::ostream& stream) const
+{
+	stream << getstacktracestring();
+}
+
+Exception& Exception::operator =(const Exception &ex)
+{
+	this->message = ex.message;
+	this->stackstrace = ex.stackstrace;
+
+	return *this;
+}
+
+Exception* Exception::clone() const
+{
+	return new Exception(*this);
+}
+
+void Exception::setstacktrace(const std::vector<std::pair<std::string, int> > &trace)
+{
+	stackstrace = trace;
+}
+
+void Exception::buildmessage(const char *format, va_list &vargs)
+{
+	char buffer[MAX_BUFFER_SIZE_02k] = {0};
+	int32 ic = STATUS_ERROR;
+
+	ic = ::vsnprintf(buffer, sizeof(buffer), format, vargs);
+	if (ic == STATUS_ERROR || ic - sizeof(buffer) > 0)
+		::printf("build message: %s error.\n", buffer);
+	
+	message.assign(buffer, ::strlen(buffer));
+}

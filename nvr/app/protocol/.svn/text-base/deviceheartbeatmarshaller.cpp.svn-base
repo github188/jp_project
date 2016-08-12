@@ -1,0 +1,87 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include "../../corelib/protocol/datastructure.h"
+#include "../../corelib/protocol/format.h"
+#include "deviceheartbeatmarshaller.h"
+#include "../../library/util/log.h"
+#include "deviceheartbeat.h"
+
+using namespace library;
+using namespace corelib::protocol;
+using namespace corelib::MTP_NETWORK;
+using namespace app;
+
+DeviceHeartBeatMarshaller::DeviceHeartBeatMarshaller()
+{
+}
+
+DeviceHeartBeatMarshaller::~DeviceHeartBeatMarshaller()
+{
+}
+
+CP::DataStructure* DeviceHeartBeatMarshaller::createObject() const
+{
+	return new DeviceHeartBeatInfo();
+}
+
+std::string DeviceHeartBeatMarshaller::getDataStructureType() const
+{
+	return DeviceHeartBeatInfo::ID_DEVICE_HEARTBEAT_INFO;
+}
+
+void DeviceHeartBeatMarshaller::unmarshal(CP::Format *, CP::DataStructure *dataStructure, library::ByteBuffer &bytebuffer)
+{
+	if (dataStructure == NULL) {
+		Log(LOG_ERROR, "DeviceHeartBeatMarshaller::unmarshal - dataStructure null.");
+		return;
+	}
+
+	DeviceHeartBeatInfo *info = dynamic_cast<DeviceHeartBeatInfo *>(dataStructure);
+	uint8 tempbuffer[64] = {0};
+
+	bytebuffer.getRawBytes(tempbuffer, 12);
+	info->setDepartment(std::string((char*)tempbuffer));
+
+	memset(tempbuffer, 0, sizeof(tempbuffer));
+	bytebuffer.getRawBytes(tempbuffer, 4);
+	info->setDeviceId(std::string((char*)tempbuffer));
+	
+	memset(tempbuffer, 0, sizeof(tempbuffer));
+	bytebuffer.getRawBytes(tempbuffer, 2);
+	info->setSerialNumber(std::string((char*)tempbuffer));
+
+//	Log(LOG_DEBUG, "device heart beat from: %s%s%s", info->getDepartment().c_str(), info->getDeviceId().c_str(), info->getSerialNumber().c_str());
+}
+
+void DeviceHeartBeatMarshaller::marshal(CP::Format *, CP::DataStructure *dataStructure, library::ByteBuffer &bytebuffer)
+{
+	if (dataStructure == NULL) {
+		Log(LOG_ERROR, "DeviceHeartBeatMarshaller::marshal - input null.");
+		return;
+	}
+
+	DeviceHeartBeatInfo *info = dynamic_cast<DeviceHeartBeatInfo *>(dataStructure);
+
+	bytebuffer.putRawBytes((const uint8*)(info->getDepartment().c_str()), 12);
+	bytebuffer.putRawBytes((const uint8*)(info->getDeviceId().c_str()), 4);
+	bytebuffer.putRawBytes((const uint8*)(info->getSerialNumber().c_str()), 2);
+
+	return;
+}

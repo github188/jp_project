@@ -1,0 +1,103 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __CORELIB_DATABASE_COMMON_DATABASE_H__
+#define __CORELIB_DATABASE_COMMON_DATABASE_H__
+
+#include <map>
+#include <string>
+
+#include "../../../common/basetype.h"
+
+namespace library {
+
+	class Thread;
+	class Runnable;
+}
+
+namespace corelib {
+namespace database {
+
+class QueryResult;
+class SqlTransaction;
+class SqlResultQueue;
+
+typedef uint64 THREADID;
+typedef std::map<THREADID, SqlTransaction*> TransactionQueues;
+typedef std::map<THREADID, SqlResultQueue*> QueryQueues;
+class Database
+{
+	private:
+
+		Database(const Database&);
+		Database& operator= (const Database&);
+
+	protected:
+
+		Database();
+
+	public:
+
+		virtual ~Database();
+
+		virtual bool dbInitialize();
+		virtual bool dbShutdown();
+
+		virtual void initDelayThread() = 0;
+		virtual void haltDelayThread() = 0;
+
+		/// Async queries and query holders, implemented in DatabaseImpl.h
+        template<class Class>
+        bool asyncQuery(Class *object, void (Class::*method)(QueryResult*), const char *sql);
+		
+        template<class Class, typename ParamType1>
+        bool asyncQuery(Class *object, void (Class::*method)(QueryResult*, ParamType1), ParamType1 param1, const char *sql);
+
+		virtual QueryResult* query(const char *sql) = 0;
+		virtual bool execute(const char *sql) = 0;
+		virtual bool directExecute(const char *sql) = 0;
+
+		virtual bool beginTransaction();
+		virtual bool commitTransaction();
+		virtual bool rollbackTransaction();
+
+		virtual operator bool ()const = 0;
+
+		virtual unsigned long escapeString(char *to, const char *from, unsigned long length);
+		void escapeString(std::string &str);
+
+		void setResultQueue(SqlResultQueue * queue);
+
+		// must be called before first query in thread (one time for thread using one from existed Database objects)
+        virtual void threadStart();
+        // must be called before finish thread run (one time for thread using one from existed Database objects)
+        virtual void threadEnd();
+
+	protected:
+
+		TransactionQueues m_tranQueues;
+		QueryQueues m_queryQueues; ///< Query queues from diff threads
+		library::Thread *m_delayThread; //sql executor
+		library::Runnable *m_delayThreadBody;
+};
+
+}
+}
+
+#endif /* end of file */

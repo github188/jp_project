@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<trapapp>
+	<connection>
+		<server>127.0.0.1</server>
+		<serverPort>40001</serverPort>
+	</connection>
+
+	<datastore>
+		<datastore_ip>10.42.181.33</datastore_ip>
+		<datastore_port>30000</datastore_port>
+	</datastore>
+	
+	<logMy>
+		<!-- log where: 0: stdout; 1: to file; 2: to file and stdout -->
+		<logWhere>0</logWhere>
+		<!-- 0: debug level above; 2: info level above; 3: warn level above; 4: only error level -->
+		<logLevel>0</logLevel>
+		<!-- size in kb -->
+		<logFileSize>20480</logFileSize>	
+		<logFileName>tohbase.log</logFileName>
+	</logMy>
+</trapapp>

@@ -1,0 +1,126 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include "../util/log.h"
+#include "poolthread.h"
+#include "threadpool.h"
+#include "reentrant.h"
+#include "thread.h"
+
+using namespace library;
+
+PoolThread::PoolThread(ThreadPool *pool, std::string &name) : threadpool(pool), thread(NULL),
+				task(NULL), threadlock(), go(TRUE)
+{
+	thread = new Thread(this, name);
+	thread->start();
+//	Log(LOG_DEBUG, "PoolThread, started.");
+}
+
+PoolThread::PoolThread(ThreadPool *pool, const char *name) : threadpool(pool), thread(NULL),
+				task(NULL), threadlock(), go(TRUE)
+{
+	std::string ssname = name;
+	
+	thread = new Thread(this, ssname);
+	thread->start();
+//	Log(LOG_DEBUG, "PoolThread, started.");
+}
+
+PoolThread::~PoolThread()
+{
+	/* send notify to wake up waiting thread */
+	close();
+	
+	if (task && task->bNeedDestroyed()) delete task;
+	task = NULL;
+	
+	if (thread) delete thread;
+	thread = NULL;
+
+	Log(LOG_DEBUG, "PoolThread, stoppped.");
+}
+
+/* true for idle */
+bool PoolThread::isIdle() const
+{
+	return !task;
+}
+
+void PoolThread::start()
+{
+//	thread->start();
+//	Log(LOG_DEBUG, "PoolThread, started.");
+}
+
+void PoolThread::close()REENTRANT({
+	
+	go = FALSE;
+	notifyall();
+})
+
+bool PoolThread::setTask(Runnable *r) 
+{
+	bool bLocked = trylock();
+	if (bLocked) {
+		
+		if (!task) {
+			
+			task = r;
+			notify();
+			unlock();
+
+//			Log(LOG_DEBUG, "set task for run.");
+			return TRUE;
+		} else {
+		
+			unlock();
+			Log(LOG_DEBUG, "already get a task.");
+			return FALSE;
+		}
+	}
+
+	return bLocked;
+}
+
+void PoolThread::run()
+{
+	lock();
+	
+	while (go) {
+		
+		if (task) {
+			
+			task->run();
+			if (task->bNeedDestroyed()) delete task;
+			task = NULL;
+			
+			unlock();
+			//notfy the pool that i am idle.
+			threadpool->idleNotification();
+			lock();
+		} else {
+
+			/* thread will be locked again when wait returns */
+			wait(10, 0);
+		}
+	}
+
+	unlock();
+}

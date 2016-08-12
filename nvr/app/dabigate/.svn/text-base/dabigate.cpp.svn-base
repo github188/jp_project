@@ -1,0 +1,221 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <netinet/in.h>
+
+#include "mtunnellistener.h"
+#include "../../library/util/log.h"
+#include "../thirdlib/xml/tinystr.h"
+#include "../thirdlib/xml/tinyxml.h"
+#include "../protocol/zhuhaiformat.h"
+#include "../common/defaultIOHandler.h"
+#include "../common/servicedispatcher.h"
+#include "../../library/util/logmanager.h"
+#include "../../library/util/activelibrary.h"
+#include "../../corelib/network/ioacceptor.h"
+#include "../../corelib/common/activecorelib.h"
+#include "../../corelib/protocol/formatfactory.h"
+#include "../../corelib/network/connectionhandler.h"
+#include "../../corelib/database/common/databaseimpl.h"
+#include "../../corelib/database/databaseoracle/databaseoracle.h"
+
+using namespace library;
+using namespace corelib;
+using namespace corelib::protocol;
+using namespace corelib::MTP_NETWORK;
+using namespace app;
+
+ST_DABIGATE_CONFIG_INFO g_dabigate_config;
+std::map<std::string, ST_SYS_SETTING_INFO> g_cjmap;
+std::map<std::string, ST_CAR_BRAND_INFO> g_cbmap;
+std::map<std::string, ST_DEVICE_INFO> g_devinfomap;
+
+void setSigmask()
+{
+	sigset_t sigmask;
+
+	::sigemptyset(&sigmask);
+	::sigaddset(&sigmask, SIGALRM);
+	::pthread_sigmask(SIG_BLOCK, &sigmask, NULL);
+
+	::signal(SIGPIPE, SIG_IGN);
+}
+
+bool initAppsConfig(std::string configFile)
+{
+	TiXmlElement *pRoot = NULL;
+	bool bloadok = false;
+	TiXmlDocument doc;
+
+	if (access(configFile.c_str(), 0) == -1) {
+		printf("==================================================\n");
+		printf("===== !!! Dabigate Config File Not Exist !!! =====\n");
+		printf("==================================================\n");
+		return false;
+	}
+
+	bloadok = doc.LoadFile(configFile.c_str());
+	if (!bloadok) {
+		printf("==================================================\n");
+		printf("===== !!! Load Dabigate Config File Fail !!! =====\n");
+		printf("==================================================\n");
+		return false;
+	}
+
+	pRoot = doc.RootElement();
+	TiXmlHandle handle(pRoot);
+
+	TiXmlElement *pElem = NULL;
+	pElem = handle.FirstChild("connection").FirstChild("lConnectionPort").ToElement();
+	g_dabigate_config.lConnectionPort = (uint16)atoi(pElem->GetText());
+	pElem = handle.FirstChild("connection").FirstChild("sConnectionPort").ToElement();
+	g_dabigate_config.sConnectionPort = (uint16)atoi(pElem->GetText());
+
+	//sending service
+	pElem = handle.FirstChild("sendingService").FirstChild("enable").ToElement();
+	g_dabigate_config.sendingService.enable = atoi(pElem->GetText()) > 0 ? true : false;
+	pElem = handle.FirstChild("sendingService").FirstChild("serverIp").ToElement();
+	g_dabigate_config.sendingService.serverIp = pElem->GetText();
+	pElem = handle.FirstChild("sendingService").FirstChild("serverPort").ToElement();
+	g_dabigate_config.sendingService.serverPort = (uint16)atoi(pElem->GetText());
+
+	//picture store
+	pElem = handle.FirstChild("pictureStore").FirstChild("enable").ToElement();
+	g_dabigate_config.pictureConfig.pictureStoreEnable = atoi(pElem->GetText()) > 0 ? true : false;
+	pElem = handle.FirstChild("pictureStore").FirstChild("threadNum").ToElement();
+	g_dabigate_config.pictureConfig.threadNum = atoi(pElem->GetText());
+	pElem = handle.FirstChild("pictureStore").FirstChild("urlPrefix").ToElement();
+	g_dabigate_config.pictureConfig.urlPrefix = pElem->GetText();
+	pElem = handle.FirstChild("pictureStore").FirstChild("pictureRoot").ToElement();
+	g_dabigate_config.pictureConfig.pictureRoot = pElem->GetText();
+	pElem = handle.FirstChild("pictureStore").FirstChild("direntNum").ToElement();
+	g_dabigate_config.pictureConfig.direntNum = (uint32)atoi(pElem->GetText());
+	for (uint32 i = 0; i < g_dabigate_config.pictureConfig.direntNum; ++i) {
+		char tmp[32] = {0};
+		std::string dir;
+
+		dir.clear();
+		sprintf(tmp, "dirent%d", i + 1);
+		pElem = handle.FirstChild("pictureStore").FirstChild(tmp).ToElement();
+		dir = pElem->GetText();
+		g_dabigate_config.pictureConfig.direntVec.push_back(dir);
+	}
+	pElem = handle.FirstChild("pictureStore").FirstChild("direntSkipOffSize").ToElement();
+	g_dabigate_config.pictureConfig.direntSkipOffSize = (uint32)atoi(pElem->GetText());
+
+	//database
+	pElem = handle.FirstChild("dbConf").FirstChild("enable").ToElement();
+	g_dabigate_config.dbconfig.enable = atoi(pElem->GetText()) > 0 ? true : false;
+	pElem = handle.FirstChild("dbConf").FirstChild("dbIp").ToElement();
+	g_dabigate_config.dbconfig.dbIp = pElem->GetText();
+	pElem = handle.FirstChild("dbConf").FirstChild("dbPort").ToElement();
+	g_dabigate_config.dbconfig.dbPort = atoi(pElem->GetText());
+	pElem = handle.FirstChild("dbConf").FirstChild("dbUser").ToElement();
+	g_dabigate_config.dbconfig.dbUser = pElem->GetText();
+	pElem = handle.FirstChild("dbConf").FirstChild("dbPass").ToElement();
+	g_dabigate_config.dbconfig.dbPass = pElem->GetText();
+	pElem = handle.FirstChild("dbConf").FirstChild("dbSid").ToElement();
+	g_dabigate_config.dbconfig.dbSid= pElem->GetText();
+
+	//logmy
+	pElem = handle.FirstChild("logMy").FirstChild("logWhere").ToElement();
+	g_dabigate_config.logMyConfig.logWhere = (uint16)atoi(pElem->GetText());
+	pElem = handle.FirstChild("logMy").FirstChild("logLevel").ToElement();
+	g_dabigate_config.logMyConfig.logLevel = (uint16)atoi(pElem->GetText());
+	pElem = handle.FirstChild("logMy").FirstChild("logFileSize").ToElement();
+	g_dabigate_config.logMyConfig.logFileSize = (uint16)atoi(pElem->GetText());
+	pElem = handle.FirstChild("logMy").FirstChild("logFileName").ToElement();
+	g_dabigate_config.logMyConfig.logFileName = pElem->GetText();
+
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+int32 main(int32 argc, char **argv)
+{
+	/* daemonize */
+	::daemon(1,1);
+	setSigmask();
+	system("rm -f dabigate.log");
+	if (!initAppsConfig(std::string("dabigateConfig.xml"))) {
+		return -1;
+	}
+	DefaultLog::initialize(g_dabigate_config.logMyConfig.logLevel, g_dabigate_config.logMyConfig.logWhere,  
+						   g_dabigate_config.logMyConfig.logFileName, g_dabigate_config.logMyConfig.logFileSize);
+
+	ActiveLibrary::initializeLibrary();
+	ActiveCorelib::initializeCoreLibrary();
+
+	Log(LOG_INFO, "**************************************************");
+	Log(LOG_INFO, "**************************************************");
+	Log(LOG_INFO, "*   SoftWare Build Time: %s: %s   *", __DATE__, __TIME__);
+	Log(LOG_INFO, "**************************************************");
+	Log(LOG_INFO, "**************************************************");
+
+	FormatFactory::getInstance().registerFormat("zhuhai", new ZhuHaiFormat((uint8)1));
+	DatatbaseOracle oracle(g_dabigate_config.dbconfig.dbIp, g_dabigate_config.dbconfig.dbPort,
+						   g_dabigate_config.dbconfig.dbUser, g_dabigate_config.dbconfig.dbPass, 
+						   g_dabigate_config.dbconfig.dbSid);
+	if (g_dabigate_config.dbconfig.enable) {
+		if (!oracle.dbInitialize()) {
+			Log(LOG_DEBUG, "Main: dabigate init database error.");
+		}
+	}
+	DbService dbservice(oracle);
+	dbservice.init();
+	FileService pictureService(dbservice);
+	ServiceDispatcher dispatcher(pictureService);
+	dispatcher.setWireFormat(FormatFactory::getInstance().findFormat("zhuhai"));
+	
+	IOAcceptor sacceptor(new DefaultIOHandler(&dispatcher), true);
+	sacceptor.bind(g_dabigate_config.sConnectionPort, 5000);
+	sacceptor.start();
+
+
+	DatatbaseOracle oracle1(g_dabigate_config.dbconfig.dbIp, g_dabigate_config.dbconfig.dbPort,
+						   g_dabigate_config.dbconfig.dbUser, g_dabigate_config.dbconfig.dbPass, 
+						   g_dabigate_config.dbconfig.dbSid);
+	if (g_dabigate_config.dbconfig.enable) {
+		if (!oracle1.dbInitialize()) {
+			Log(LOG_DEBUG, "Main: dabigate init database error.");
+		}
+	}
+	DbService dbservice1(oracle1);
+	MTunnelListener mtunnel(dbservice1);
+	mtunnel.setWireFormat(FormatFactory::getInstance().findFormat("zhuhai"));
+	IOAcceptor lacceptor(new DefaultIOHandler(&mtunnel), true);
+	lacceptor.bind(g_dabigate_config.lConnectionPort, 5000);
+	lacceptor.start();
+
+	while (1)
+	{
+		sleep(10);
+	}
+
+	ActiveCorelib::shutdownCoreLibrary();
+	ActiveLibrary::shutdownLibrary();
+	
+	return 0;
+}

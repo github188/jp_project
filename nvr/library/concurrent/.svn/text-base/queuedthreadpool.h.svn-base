@@ -1,0 +1,98 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#ifndef __LIBRARY_CONCURENT_QUEUEDTHREADPOOL_H__
+#define __LIBRARY_CONCURENT_QUEUEDTHREADPOOL_H__
+
+#include "threadpool.h"
+#include "thread.h"
+
+namespace library {
+
+/**
+ * Queued threadpool handle.
+ *
+ * The QueuedThreadPool class provide a pool of threads that can be used to perform
+ * an arbitrary number of tasks. If a task is added and there is not a idle thread,
+ * then the task will be queued and will be processed later. The excute method is not
+ * like the method in the ThreadPool will no be blocked.
+ *
+ * this handle is a thread. to active the QueuedthreadPool, user should start it by 
+ * calling the start() function.
+ *
+ * Note:
+ * thread pool don't promiss the task exceuting in their assigning order.
+ */
+class QueuedThreadPool : public Thread, public ThreadPool
+{
+	public:
+
+		QueuedThreadPool(std::string &poolName, uint32 poolNum, std::string &poolThreadname);
+		
+		QueuedThreadPool(std::string &poolName, uint32 poolNum = 5);
+
+		virtual ~QueuedThreadPool();
+
+	public:
+
+		/* excute the task, if no idle thread, then queued. */
+		virtual void excute(Runnable *r);
+
+		/* poolthread notify it when its task is running out. */
+		virtual void idleNotification();
+
+		/* get the current queued task num. this value may be uncorrect as poolthread runs fast. */
+		uint32 getQueueLength() const {return queue.size();};
+
+		/* main thread function, excute the queued task. get notify from poolthread when task runs out. */
+		virtual void run();
+
+	public:
+
+		virtual void lock() {threadlock.lock();};
+
+		virtual bool trylock() {return threadlock.trylock();};
+
+		virtual void unlock() {threadlock.unlock();};
+
+		virtual void wait() {threadlock.wait();};
+
+		virtual bool wait(int64 mills, int32 nases) {
+			return threadlock.wait(mills, nases);
+		};
+
+		virtual void notify() {threadlock.notify();};
+
+		virtual void notifyall() {threadlock.notifyall();};
+
+	private:
+
+		/* assign the task to poolthread. if not find a poolthread, then queued */
+		void assign(Runnable *r);
+
+	private:
+
+		List<Runnable> queue;
+		Lock threadlock;
+		bool go; //thread exit when this flag is setting true.
+};
+
+}
+
+#endif /* end of file */

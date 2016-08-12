@@ -1,0 +1,178 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <stdio.h>
+#include <string.h>
+#include "carbypassdescinfo.h"
+
+//using namespace library;
+using namespace app;
+
+const std::string CarBypassDescInfo::ID_CARBYPASS_INFO = "6.9005";
+////////////////////////////////////////////////////////////////////////////////
+CarBypassDescInfo::CarBypassDescInfo()
+{
+}
+
+CarBypassDescInfo::~CarBypassDescInfo()
+{
+}
+
+std::string CarBypassDescInfo::getDataStructureType() const
+{
+	return CarBypassDescInfo::ID_CARBYPASS_INFO;
+}
+
+void CarBypassDescInfo::copyDataStructure(const DataStructure *src)
+{
+    if (this == src) {
+        return;
+    }
+
+	const CarBypassDescInfo *carInfo = dynamic_cast<const CarBypassDescInfo *>(src);
+	DataStructure::copyDataStructure(src);
+	this->setSessionId(carInfo->getSessionId());
+	this->setXxbh(carInfo->getXxbh());
+	this->setKkbh(carInfo->getKkbh());
+	this->setSbbh(carInfo->getSbbh());
+	this->setJgsj(carInfo->getJgsj());
+	this->setCdbh(carInfo->getCdbh());
+	this->setHphm(carInfo->getHphm());
+	this->setHpys(carInfo->getHpys());
+	this->setCwhphm(carInfo->getCwhphm());
+	this->setCwhpys(carInfo->getCwhpys());
+	this->setHpyz(carInfo->getHpyz());
+	this->setClsd(carInfo->getClsd());
+	this->setClxs(carInfo->getClxs());
+	this->setClcd(carInfo->getClcd());
+	this->setXszt(carInfo->getXszt());
+	this->setClpp(carInfo->getClpp());
+	this->setClwx(carInfo->getClwx());
+	this->setCsys(carInfo->getCsys());
+	this->setCb(carInfo->getCb());
+	this->setCllx(carInfo->getCllx());
+	this->setHpzl(carInfo->getHpzl());
+	this->setSsqy(carInfo->getSsqy());
+	this->setTxsl(carInfo->getTxsl());
+	this->setUrls(carInfo->getUrls());
+}
+
+bool CarBypassDescInfo::equals(const DataStructure *value) const
+{
+	if (this == value) return true;
+
+	const CarBypassDescInfo *info = dynamic_cast<const CarBypassDescInfo *>(value);
+	if (this->xxbh != info->getXxbh()) return false;
+	if (this->kkbh != info->getKkbh()) return false;
+	if (this->sbbh != info->getKkbh()) return false;
+	if (this->jgsj != info->getJgsj()) return false;
+	if (this->cdbh != info->getCdbh()) return false;
+	if (this->hphm != info->getHphm()) return false;
+	if (this->hpys != info->getHpys()) return false;
+	if (this->cwhphm != info->getCwhphm()) return false;
+	if (this->cwhpys != info->getCwhpys()) return false;
+	if (this->hpyz != info->getHpyz()) return false;
+	if (this->clsd != info->getClsd()) return false;
+	if (this->clxs != info->getClxs()) return false;
+	if (this->cscd != info->getClcd()) return false;
+	if (this->xszt != info->getXszt()) return false;
+	if (this->clpp != info->getClpp()) return false;
+	if (this->clwx != info->getClwx()) return false;
+	if (this->csys != info->getCsys()) return false;
+	if (this->cb != info->getCb()) return false;
+	if (this->cllx != info->getCllx()) return false;
+	if (this->hpzl != info->getHpzl()) return false;
+	if (this->ssqy != info->getSsqy()) return false;
+	if (this->txsl != info->getTxsl()) return false;
+
+	return true;
+}
+
+void CarBypassDescInfo::setAll(ST_CAR_DESCRIPTION_INFO *carInfo)
+{
+	if (carInfo == NULL) return;
+
+	setXxbh(carInfo->vehiSn, sizeof(carInfo->vehiSn));
+	setKkbh(carInfo->blockSn, sizeof(carInfo->blockSn));
+	setSbbh(carInfo->devSn, sizeof(carInfo->devSn));
+	setJgsj(carInfo->ptime, sizeof(carInfo->ptime));
+	setCdbh(carInfo->laneSn, sizeof(carInfo->laneSn));
+	setHphm(carInfo->plateFNo, sizeof(carInfo->plateFNo));
+	setHpys(carInfo->plateFCol, sizeof(carInfo->plateFCol));
+	setCwhphm(carInfo->plateTNo, sizeof(carInfo->plateTNo));
+	setCwhpys(carInfo->plateTCol, sizeof(carInfo->plateTCol));
+	setHpyz(carInfo->ftEquel, sizeof(carInfo->ftEquel));
+	setClsd(carInfo->fSpeed);
+	setClxs(carInfo->fSpeedLim);
+	setClcd(carInfo->vehiLen);
+	setXszt(carInfo->runState, sizeof(carInfo->runState));
+	setClpp(carInfo->vehiBrand, sizeof(carInfo->vehiBrand));
+	setClwx(carInfo->vehiShape, sizeof(carInfo->vehiShape));
+	setCsys(carInfo->vehiCol, sizeof(carInfo->vehiCol));
+	setCb(carInfo->vehiCode, sizeof(carInfo->vehiCode));
+	setCllx(carInfo->vehiType, sizeof(carInfo->vehiType));
+	setHpzl(carInfo->plateType, sizeof(carInfo->plateType));
+	setSsqy(carInfo->area, sizeof(carInfo->area));
+	setTxsl(carInfo->urlInfo.urlNum);
+	setUrls(carInfo->urlInfo);
+}
+
+ST_CAR_DESCRIPTION_INFO CarBypassDescInfo::getAll()const
+{
+	ST_CAR_DESCRIPTION_INFO carInfo;
+
+	memset(&carInfo, 0, sizeof(ST_CAR_DESCRIPTION_INFO));
+
+	strncpy(carInfo.vehiSn, xxbh.c_str(), sizeof(carInfo.vehiSn));
+	strncpy(carInfo.blockSn, kkbh.c_str(), sizeof(carInfo.blockSn));
+	strncpy(carInfo.devSn, sbbh.c_str(), sizeof(carInfo.devSn));
+	strncpy(carInfo.ptime, jgsj.c_str(), sizeof(carInfo.ptime));
+	strncpy(carInfo.laneSn, cdbh.c_str(), sizeof(carInfo.laneSn));
+	strncpy(carInfo.plateFNo, hphm.c_str(), sizeof(carInfo.plateFNo));
+	strncpy(carInfo.plateFCol, hpys.c_str(), sizeof(carInfo.plateFCol));
+	strncpy(carInfo.plateTNo, cwhphm.c_str(), sizeof(carInfo.plateTNo));
+	strncpy(carInfo.plateTCol, cwhpys.c_str(), sizeof(carInfo.plateTCol));
+	strncpy(carInfo.ftEquel, hpyz.c_str(), sizeof(carInfo.ftEquel));
+	carInfo.fSpeed = clsd;
+	carInfo.fSpeedLim = clxs;
+	carInfo.vehiLen = cscd;
+	strncpy(carInfo.runState, xszt.c_str(), sizeof(carInfo.runState));
+	strncpy(carInfo.vehiBrand, clpp.c_str(), sizeof(carInfo.vehiBrand));
+	strncpy(carInfo.vehiShape, clwx.c_str(), sizeof(carInfo.vehiShape));
+	strncpy(carInfo.vehiCol, csys.c_str(), sizeof(carInfo.vehiCol));
+	strncpy(carInfo.vehiCode, cb.c_str(), sizeof(carInfo.vehiCode));
+	strncpy(carInfo.vehiType, cllx.c_str(), sizeof(carInfo.vehiType));
+	strncpy(carInfo.plateType, hpzl.c_str(), sizeof(carInfo.plateType));
+	strncpy(carInfo.area, ssqy.c_str(), sizeof(carInfo.area));
+	carInfo.urlInfo = urls;
+
+	/* 添加解包时间 */
+	char cTime[32] = {0};
+	struct tm *pstTm;
+	time_t timep;
+
+	timep = time(NULL);
+	pstTm = gmtime(&timep); /* 获取GMT时间: 换算成北京时间需要 + 8 */
+	sprintf(cTime, "%04d-%02d-%02d %02d:%02d:%02d", pstTm->tm_year + 1900, 
+			pstTm->tm_mon + 1, pstTm->tm_mday, pstTm->tm_hour + 8, pstTm->tm_min,
+			pstTm->tm_sec);
+	::memcpy(carInfo.arrivetime, cTime, ::strlen(cTime));
+
+	return carInfo;
+}

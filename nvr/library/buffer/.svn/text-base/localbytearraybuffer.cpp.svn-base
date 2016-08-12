@@ -1,0 +1,430 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <string.h>
+
+#include "localbytearraybuffer.h"
+#include "../util/log.h"
+
+using namespace library;
+
+LocalByteArrayBuffer::LocalByteArrayBuffer(int32 capacity) : ByteBuffer(capacity),
+				_array(new uint8[capacity]), _offset(0), _length(capacity), _own(true)
+{
+}
+
+LocalByteArrayBuffer::LocalByteArrayBuffer(std::vector<uint8> &buffer) : ByteBuffer((int32)buffer.size()), 
+				_array(&buffer[0]), _offset(0), _length((int32)buffer.size()), _own(false)
+{
+}
+
+LocalByteArrayBuffer::LocalByteArrayBuffer(uint8* array, int32 size, int32 offset, int32 length, bool own) :
+				ByteBuffer(length), _array(array), _offset(offset), _length(length), _own(own)
+{
+	if (offset < 0 || offset > size) {
+		Log(LOG_ERROR, "Offset parameter if out of bounds, %d", offset);
+	}
+
+	if (length < 0 || offset + length > size) {
+		Log(LOG_ERROR, "length parameter if out of bounds, %d", length);
+	}
+}
+
+LocalByteArrayBuffer::LocalByteArrayBuffer(const LocalByteArrayBuffer& other) : ByteBuffer(other), 
+				_array(other._array), _offset(other._offset), _length(other._length), _own(false)
+{
+}
+
+LocalByteArrayBuffer::~LocalByteArrayBuffer()
+{
+	if (_own) delete [] _array;
+	_array = NULL;
+}
+
+uint8* LocalByteArrayBuffer::array()
+{
+	return this->_array;
+}
+
+const uint8* LocalByteArrayBuffer::array() const
+{
+	return this->_array;
+}
+
+int32 LocalByteArrayBuffer::arrayOffset() const
+{
+	return this->_offset;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::compact()
+{
+	for (int32 ix = 0; ix < this->remaining(); ++ix) {
+		this->putChar(ix, this->get(this->position() + ix));
+	}
+
+	this->position(this->limit() - this->position());
+	this->limit(this->capacity());
+	this->_markSet = FALSE;
+
+	return *this;
+}
+
+LocalByteArrayBuffer* LocalByteArrayBuffer::duplicate()
+{
+	return new LocalByteArrayBuffer(*this);
+}
+
+uint8 LocalByteArrayBuffer::get() const
+{
+	return this->get(this->_position++);
+}
+
+uint8 LocalByteArrayBuffer::get(int32 index) const
+{
+	if(index >= this->limit()) {
+    	Log(LOG_ERROR, "ByteArrayBuffer::get - Not enough data to fill request.");
+		return -1;
+    }
+
+    return _array[_offset + index];
+}
+
+char LocalByteArrayBuffer::getChar()
+{
+	return (char) this->get();
+}
+
+char LocalByteArrayBuffer::getChar(int32 index) const
+{
+	return (char) this->get(index);
+}
+
+double LocalByteArrayBuffer::getDouble()
+{
+	double value = 0;
+
+	value = this->getDouble(this->position());
+	this->_position += sizeof(double);
+
+	return value;
+}
+
+double LocalByteArrayBuffer::getDouble(int32 index) const
+{
+	double value = 0;
+	
+	if ((index + (int32)sizeof(double)) > this->limit()) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::getDouble - Not enough data to fill request.");
+		return -1;
+	}
+
+	memcpy(&value, _array + _offset + index, sizeof(double));
+
+	return value;
+}
+
+float LocalByteArrayBuffer::getFloat()
+{
+	float value = 0;
+	
+	value = this->getFloat(this->position());
+	this->_position += sizeof(float);
+
+	return value;
+}
+
+float LocalByteArrayBuffer::getFloat(int32 index) const
+{
+	float value = 0;
+	
+	if ((index + (int32)sizeof(float)) > this->limit()) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::getFloat - Not enough data to fill request.");
+		return -1;
+	}
+
+	memcpy(&value, _array + _offset + index, sizeof(float));
+
+	return value;
+}
+
+int64 LocalByteArrayBuffer::getLong()
+{
+	int64 value = 0;
+	
+	value = this->getLong(this->position());
+	this->_position += sizeof(int64);
+
+	return value;
+}
+
+int64 LocalByteArrayBuffer::getLong(int32 index) const
+{
+	int64 value = 0;
+	
+	if ((index + (int32)sizeof(int64)) > this->limit()) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::getLong - Not enough data to fill request.");
+		return -1;
+	}
+
+	memcpy(&value, _array + _offset + index, sizeof(int64));
+
+	return value;
+}
+
+int32 LocalByteArrayBuffer::getInt()
+{
+	int32 value = 0;
+	
+	value = this->getInt(this->position());
+	this->_position += sizeof(int32);
+
+	return value;
+}
+
+int32 LocalByteArrayBuffer::getInt(int32 index) const
+{
+	int32 value = 0;
+	
+	if ((index + (int32)sizeof(int32)) > this->limit()) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::getInt - Not enough data to fill request.");
+		return -1;
+	}
+
+	memcpy(&value, _array + _offset + index, sizeof(int32));
+
+	return value;
+}
+
+int16 LocalByteArrayBuffer::getShort()
+{
+	int16 value = 0;
+
+	value = this->getShort(this->position());
+	this->_position += sizeof(int16);
+
+	return value;
+}
+
+int16 LocalByteArrayBuffer::getShort(int32 index) const
+{
+	int16 value = 0;
+	
+	if ((index + (int32)sizeof(int16)) > this->limit()) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::getShort - Not enough data to fill request.");
+		return -1;
+	}
+
+	memcpy(&value, _array + _offset + index, sizeof(int16));
+
+	return value;
+}
+
+uint8* LocalByteArrayBuffer::getRawBytes(uint8* value, int32 length)
+{
+	if (value == NULL || length <= 0) return value;
+
+	this->getRawBytes(this->position(), value, length);
+	this->_position += length;
+
+	return value;
+}
+
+uint8* LocalByteArrayBuffer::getRawBytes(int32 index, uint8* value, int32 length)const
+{
+	if (value == NULL || length <= 0) return value;
+	
+	if ((index + length) > this->limit()) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::getRawBytes - Not enough data to fill request.");
+		return value;
+	}
+
+	memcpy(value, _array + _offset + index, length);
+
+	return value;
+}
+
+int32 LocalByteArrayBuffer::put(int32 index, const char* value, int32 length)
+{
+	if (index + length > this->limit()) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::put - Not enough data to fill request");
+		return -1;
+	}
+
+	memcpy(this->_array + index + _offset, value, length);
+	
+	return 0;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putChar(char value)
+{
+	int32 index = this->_position;
+
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == 0)
+		this->_position += sizeof(value);
+	else
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putChar(1)");
+
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putChar(int32 index, char value)
+{
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == -1) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putChar(1, 1)");
+	}
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putDouble(double value)
+{
+	int32 index = this->_position;
+
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == 0)
+		this->_position += sizeof(value);
+	else
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putDouble(1)");
+
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putDouble(int32 index, double value)
+{
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == -1) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putDouble(1, 1)");
+	}
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putFloat(float value)
+{
+	int32 index = this->_position;
+
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == 0)
+		this->_position += sizeof(value);
+	else
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putFloat(1)");
+
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putFloat(int32 index, float value)
+{
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == -1) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putFloat(1, 1)");
+	}
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putLong(int64 value)
+{
+	int32 index = this->_position;
+
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == 0)
+		this->_position += sizeof(value);
+	else
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putLong(1)");
+
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putLong(int32 index, int64 value)
+{
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == -1) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putLong(1, 1)");
+	}
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putInt(int32 value)
+{
+	int32 index = this->_position;
+
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == 0)
+		this->_position += sizeof(value);
+	else
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putInt(1)");
+
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putInt(int32 index, int32 value)
+{
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == -1) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putInt(1, 1)");
+	}
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putShort(int16 value)
+{
+	int32 index = this->_position;
+
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == 0)
+		this->_position += sizeof(value);
+	else
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putShort(1)");
+
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putShort(int32 index, int16 value)
+{
+	int32 iRet = this->put(index, (const char*)&value, sizeof(value));
+	if (iRet == -1) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putShort(1, 1)");
+	}
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putRawBytes(const uint8* value, int32 length)
+{
+	int32 index = this->_position;
+	
+	if (value == NULL || length <= 0) return *this;
+
+	int32 iRet = this->put(index, (const char*)value, length);
+	if (iRet == 0)
+		this->_position += length;
+	else
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putRawBytes(1, 1).");
+
+	return *this;
+}
+
+LocalByteArrayBuffer& LocalByteArrayBuffer::putRawBytes(int32 index, const uint8* value, int32 length)
+{
+	if (value == NULL || length <= 0) return *this;
+	
+	int32 iRet = this->put(index, (const char*)&value, length);
+	if (iRet == -1) {
+		Log(LOG_ERROR, "LocalByteArrayBuffer::putRawBytes(1, 1, 1).");
+	}
+	return *this;
+}

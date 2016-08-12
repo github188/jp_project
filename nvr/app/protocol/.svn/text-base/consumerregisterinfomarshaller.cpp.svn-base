@@ -1,0 +1,74 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include "../../corelib/protocol/datastructure.h"
+#include "consumerregisterinfomarshaller.h"
+#include "../../corelib/protocol/format.h"
+#include "../../library/util/log.h"
+#include "consumerregisterinfo.h"
+
+using namespace library;
+using namespace corelib::protocol;
+using namespace corelib::MTP_NETWORK;
+using namespace app;
+
+ConsumerRegisterInfoMarshaller::ConsumerRegisterInfoMarshaller()
+{
+}
+
+ConsumerRegisterInfoMarshaller::~ConsumerRegisterInfoMarshaller()
+{
+}
+
+CP::DataStructure* ConsumerRegisterInfoMarshaller::createObject() const
+{
+	return new ConsumerRegisterInfo();
+}
+
+std::string ConsumerRegisterInfoMarshaller::getDataStructureType() const
+{
+	return ConsumerRegisterInfo::ID_CONSUMER_REGISTER_INFO;
+}
+
+void ConsumerRegisterInfoMarshaller::unmarshal(CP::Format *, CP::DataStructure *dataStructure, library::ByteBuffer &bytebuffer)
+{
+	if (dataStructure == NULL) {
+		Log(LOG_ERROR, "ConsumerRegisterInfoMarshaller::unmarshal - dataStructure null.");
+		return;
+	}
+
+	ConsumerRegisterInfo *info = dynamic_cast<ConsumerRegisterInfo *>(dataStructure);
+	info->setStatus((uint32)bytebuffer.getInt());
+	info->setRegisterType((uint32)bytebuffer.getInt());
+}
+
+void ConsumerRegisterInfoMarshaller::marshal(CP::Format *, CP::DataStructure *dataStructure, library::ByteBuffer &bytebuffer)
+{
+	if (dataStructure == NULL) {
+		Log(LOG_ERROR, "ConsumerRegisterInfoMarshaller::marshal - input null.");
+		return;
+	}
+
+	ConsumerRegisterInfo *info = dynamic_cast<ConsumerRegisterInfo *>(dataStructure);
+	
+	bytebuffer.putInt((int32)info->getStatus());
+	bytebuffer.putInt((int32)info->getRegisterType());
+
+	return;
+}

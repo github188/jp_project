@@ -1,0 +1,250 @@
+/***************************************************************************
+ *   Copyright (C) 2015 by root   				   						   *
+ *   ysgen0217@163.com   							   					   *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+ ***************************************************************************/
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include "sqlcartrap.h"
+#include "../../library/util/log.h"
+#include "../../library/util/system.h"
+#include "../../corelib/database/databaseoracle/myoracle.h"
+#include "../../corelib/database/databaseoracle/databaseoracle.h"
+
+using namespace library;
+using namespace corelib::database;
+using namespace app;
+
+extern std::map<std::string, ST_DEVICE_INFO> g_devinfomap;
+
+////////////////////////////////////////////////////////////////////////////////
+static void getdataitem(std::string &dst, char *src, size_t len)
+{
+	char str[MAX_BUFFER_SIZE_01k] = {0};
+	size_t l = (len > sizeof(str) - 1) ? (sizeof(str) - 1) : len;
+
+	dst.clear();
+	if (src == NULL || len == 0)
+	{
+		dst += "";
+		return;
+	}
+	::memcpy(str, src, l);
+	dst += str;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+SqlCarTrap::SqlCarTrap(ST_CAR_TRAP_INFO &trap) : m_trap(trap), jgsk(NULL), bjsk(NULL)
+{
+	clxxbh.resize(100);
+	bkxxbh.resize(8);
+	kkbh.resize(18);
+	fxbh.resize(10);
+	hphm.resize(16);
+	hpys.resize(1);
+	cwhphm.resize(15);
+	cwhpys.resize(1);
+	hpyz.resize(1);
+	clpp.resize(3);
+	clwx.resize(3);
+	csys.resize(5);
+	hpzl.resize(4);
+	txmc1.resize(200);
+	txmc2.resize(200);
+	bjlx.resize(100);
+
+	if (jgsk == NULL) jgsk = OCI_DateCreate(NULL);
+	if (bjsk == NULL) bjsk = OCI_DateCreate(NULL);
+}
+
+SqlCarTrap::~SqlCarTrap()
+{
+	if (jgsk) OCI_DateFree(jgsk); jgsk = NULL;
+	if (bjsk) OCI_DateFree(bjsk); bjsk = NULL;
+}
+
+void SqlCarTrap::Execute(CD::Database *db)
+{
+	if (db == NULL) return;
+
+	DatatbaseOracle *mydb = static_cast<DatatbaseOracle*>(db);
+	MyOracle* orcl = mydb->getDatabaseHandle();
+	
+	OCI_Statement *newRecordStmt = orcl->prepare(formatCarTrap());
+	addBindingCarTrap(newRecordStmt);
+	update();
+	orcl->execute(newRecordStmt);
+	bool bCommited = orcl->commit();
+	Log(LOG_DEBUG, "SqlCarTrap::Execute - execute car trap %s", bCommited ? "SUCCESS" : "FAIL!!!");
+	
+	OCI_StatementFree(newRecordStmt);
+}
+
+std::string SqlCarTrap::formatCarTrap()
+{
+	std::string sql;
+
+	sql = "INSERT INTO ALERTING_TAB(BJXXBH, CLXXBH, BKXXBH, KKBH, JGSK, FXBH, HPHM, HPYS, CWHPHM, CWHPYS, ";
+	sql += "HPYZ, CLPP, CLWX, CSYS, CLLX, HPZL, CLSD, TXSL, TXMC1, TXMC2, BJSK,";
+	sql += "CLBJ, CLNR, QSBJ, QSNR, BYZD7, BJLX, BJDD, CLCD, CLXX) VALUES (SEQ_ALERTING_TAB.nextval,";
+	sql += ":clxxbh, :bkxxbh, :kkbh, :jgsk, :fxbh, :hphm, :hpys, :cwhphm, :cwhpys,";
+	sql += ":hpyz, :clpp, :clwx, :csys, NULL, :hpzl, :clsd, :txsl, :txmc1, :txmc2, :bjsk, ";
+	sql += "NULL, NULL, NULL, NULL, NULL, :bjlx, NULL, NULL, NULL)";
+
+	return sql;
+}
+
+void SqlCarTrap::addBindingCarTrap(OCI_Statement *stmt)
+{
+	if (stmt == NULL) return;
+
+	OCI_BindString(stmt, ":clxxbh", (char*)(clxxbh.c_str()), clxxbh.size());
+	OCI_BindString(stmt, ":bkxxbh", (char*)(bkxxbh.c_str()), bkxxbh.size());
+	OCI_BindString(stmt, ":kkbh", (char*)(kkbh.c_str()), kkbh.size());
+	OCI_BindDate(stmt, ":jgsk", jgsk);
+	OCI_BindString(stmt, ":fxbh", (char*)(fxbh.c_str()), fxbh.size());
+	OCI_BindString(stmt, ":hphm", (char*)(hphm.c_str()), hphm.size());
+	OCI_BindString(stmt, ":hpys", (char*)(hpys.c_str()), hpys.size());
+	OCI_BindString(stmt, ":cwhphm", (char*)(cwhphm.c_str()), cwhphm.size());
+	OCI_BindString(stmt, ":cwhpys", (char*)(cwhpys.c_str()), cwhpys.size());
+	OCI_BindString(stmt, ":hpyz", (char*)(hpyz.c_str()), hpyz.size());
+	OCI_BindString(stmt, ":clpp", (char*)(clpp.c_str()), clpp.size());
+	OCI_BindString(stmt, ":clwx", (char*)(clwx.c_str()), clwx.size());
+	OCI_BindString(stmt, ":csys", (char*)(csys.c_str()), csys.size());
+	OCI_BindString(stmt, ":hpzl", (char*)(hpzl.c_str()), hpzl.size());
+	OCI_BindFloat(stmt, ":clsd", &clsd);
+	OCI_BindInt(stmt, ":txsl", &txsl);
+	OCI_BindString(stmt, ":txmc1", (char*)(txmc1.c_str()), txmc1.size());
+	OCI_BindString(stmt, ":txmc2", (char*)(txmc2.c_str()), txmc2.size());
+	OCI_BindDate(stmt, ":bjsk", bjsk);
+	OCI_BindString(stmt, ":bjlx", (char*)(bjlx.c_str()), bjlx.size());
+}
+
+void SqlCarTrap::update()
+{
+	char in[MAX_BUFFER_SIZE_256] = {0}, out[MAX_BUFFER_SIZE_256] = {0};
+	std::map<std::string, ST_DEVICE_INFO>::iterator it;
+	char buf[MAX_BUFFER_SIZE_256] = {0};
+	ST_DEVICE_INFO devinfo; 
+	char *pcPos = NULL;
+	std::string t;
+
+	memset(buf, 0, sizeof(buf));
+	strncpy(buf, m_trap.stcarinfo.devSn, sizeof(m_trap.stcarinfo.devSn));
+	it = g_devinfomap.find(buf);
+	if (it != g_devinfomap.end()) devinfo = it->second;
+
+	clxxbh.clear();
+	getdataitem(clxxbh, m_trap.stcarinfo.blockSn, sizeof(m_trap.stcarinfo.blockSn));
+	getdataitem(t, devinfo.direction, sizeof(devinfo.direction));
+	clxxbh += t;
+	getdataitem(t, m_trap.stcarinfo.laneSn, sizeof(m_trap.stcarinfo.laneSn));
+	clxxbh += t;
+	getdataitem(t, m_trap.stcarinfo.vehiSn, sizeof(m_trap.stcarinfo.vehiSn));
+	clxxbh += t;
+
+	getdataitem(bkxxbh, m_trap.bkxxbh, ::strlen(m_trap.bkxxbh));
+	getdataitem(kkbh, m_trap.stcarinfo.blockSn, sizeof(m_trap.stcarinfo.blockSn));
+
+	pcPos = ::strchr(m_trap.stcarinfo.ptime, '.');
+	if (pcPos && pcPos - m_trap.stcarinfo.ptime > 0)
+		getdataitem(t, m_trap.stcarinfo.ptime, (pcPos - m_trap.stcarinfo.ptime));
+	else
+		t = "2000-01-01 00:00:00";
+	//	OCI_DateFromText(jgsk, MT(t.c_str()), MT("YYYY-MM-DD HH24:MI:SS"));
+	OCI_DateFromText(jgsk, t.c_str(), "YYYY-MM-DD HH24:MI:SS");
+
+	getdataitem(fxbh, devinfo.directionSn, sizeof(devinfo.directionSn));
+	if (strlen(m_trap.stcarinfo.urlInfo.url[0]) > 0 || strlen(m_trap.stcarinfo.urlInfo.url[1]) > 0) {
+
+		///! transfer @param 'hphm' to gb2312
+		memset(in, 0, sizeof(in)); memset(out, 0, sizeof(out));
+		memcpy(in, m_trap.stcarinfo.plateFNo, sizeof(m_trap.stcarinfo.plateFNo));
+		int32 iRet = System::u2g(in, sizeof(in), out, sizeof(out));
+		if (iRet < 0 || strlen(out) <= 0) {
+			getdataitem(hphm, m_trap.stcarinfo.plateFNo, sizeof(m_trap.stcarinfo.plateFNo));
+		} else {
+			getdataitem(hphm, out, strlen(out));
+		}
+	
+		getdataitem(hpys, m_trap.stcarinfo.plateFCol, sizeof(m_trap.stcarinfo.plateFCol));
+	} else if (strlen(m_trap.stcarinfo.urlInfo.url[2]) > 0 || strlen(m_trap.stcarinfo.urlInfo.url[3]) > 0) {
+	
+		///! transfer @param 'hphm' to gb2312
+		memset(in, 0, sizeof(in)); memset(out, 0, sizeof(out));
+		memcpy(in, m_trap.stcarinfo.plateTNo, sizeof(m_trap.stcarinfo.plateTNo));
+		int32 iRet = System::u2g(in, sizeof(in), out, sizeof(out));
+		if (iRet < 0 || strlen(out) <= 0) {
+			getdataitem(hphm, m_trap.stcarinfo.plateTNo, sizeof(m_trap.stcarinfo.plateTNo));
+		} else {
+			getdataitem(hphm, out, strlen(out));
+		}
+		
+		getdataitem(hpys, m_trap.stcarinfo.plateTCol, sizeof(m_trap.stcarinfo.plateTCol));
+	} else {
+		getdataitem(hphm, m_trap.stcarinfo.plateFNo, sizeof(m_trap.stcarinfo.plateFNo));
+		getdataitem(hpys, m_trap.stcarinfo.plateFCol, sizeof(m_trap.stcarinfo.plateFCol));
+	}
+
+	///! transfer @param 'cwhphm' to gb2312
+	memset(in, 0, sizeof(in)); memset(out, 0, sizeof(out));
+	memcpy(in, m_trap.stcarinfo.plateTNo, sizeof(m_trap.stcarinfo.plateTNo));
+	int32 iRet = System::u2g(in, sizeof(in), out, sizeof(out));
+	if (iRet < 0 || strlen(out) <= 0) {
+		getdataitem(cwhphm, m_trap.stcarinfo.plateTNo, sizeof(m_trap.stcarinfo.plateTNo));
+	} else {
+		getdataitem(cwhphm, out, strlen(out));
+	}
+		
+	getdataitem(cwhpys, m_trap.stcarinfo.plateTCol, sizeof(m_trap.stcarinfo.plateTCol));
+	getdataitem(hpyz, m_trap.stcarinfo.ftEquel, sizeof(m_trap.stcarinfo.ftEquel));
+	getdataitem(clpp, m_trap.stcarinfo.vehiBrand, sizeof(m_trap.stcarinfo.vehiBrand));
+	getdataitem(clwx, m_trap.stcarinfo.vehiShape, sizeof(m_trap.stcarinfo.vehiShape));
+	getdataitem(csys, m_trap.stcarinfo.vehiCol, sizeof(m_trap.stcarinfo.vehiCol));
+	getdataitem(hpzl, m_trap.stcarinfo.plateType, sizeof(m_trap.stcarinfo.plateType));
+	clsd = m_trap.stcarinfo.fSpeed;
+	txsl = m_trap.stcarinfo.urlInfo.urlNum;
+
+	if (strlen(m_trap.stcarinfo.urlInfo.url[0]) > 0)
+	{
+		getdataitem(txmc1, m_trap.stcarinfo.urlInfo.url[0], strlen(m_trap.stcarinfo.urlInfo.url[0]));
+		getdataitem(txmc2, m_trap.stcarinfo.urlInfo.url[1], strlen(m_trap.stcarinfo.urlInfo.url[1]));
+	}
+	else if (strlen(m_trap.stcarinfo.urlInfo.url[2]) > 0)
+	{
+		getdataitem(txmc1, m_trap.stcarinfo.urlInfo.url[2], strlen(m_trap.stcarinfo.urlInfo.url[2]));
+		getdataitem(txmc2, m_trap.stcarinfo.urlInfo.url[3], strlen(m_trap.stcarinfo.urlInfo.url[3]));
+	}
+	else
+	{
+		getdataitem(txmc1, (char*)"", 0);
+		getdataitem(txmc2, (char*)"", 0);
+	}
+
+	struct tm *ptm = NULL;
+	char tmstr[32] = {0};
+	time_t tsec = time(NULL);
+	ptm = localtime(&tsec);
+	::sprintf(tmstr, "%04d-%02d-%02d %02d:%02d:%02d", (1900 + ptm->tm_year), 
+			  (1 + ptm->tm_mon), ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
+//	OCI_DateFromText(bjsk, MT(tmstr), MT("YYYY-MM-DD HH24:MI:SS"));
+	OCI_DateFromText(bjsk, tmstr, "YYYY-MM-DD HH24:MI:SS");
+	
+	getdataitem(bjlx, m_trap.bjlx, ::strlen(m_trap.bjlx));
+}
